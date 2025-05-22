@@ -124,10 +124,5 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ],
-  "pnpm": {
-    "overrides": {
-      "vue-loader": "^15.9.8"
-    }
-  }
+  ]
 }
