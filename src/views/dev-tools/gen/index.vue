@@ -124,16 +124,13 @@
                   icon="el-icon-view"
                   @click="handleToDB(scope.row)"
                 >生成配置</el-button>
-
-     
                 <el-button
                   slot="reference"
                   type="text"
                   size="small"
                   icon="el-icon-view"
-                   @click="handleToApiFile(scope.row)"
+                  @click="handleToApiFile(scope.row)"
                 >生成迁移脚本</el-button>
-                
                 <el-button
                   slot="reference"
                   type="text"
