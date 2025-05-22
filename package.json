@@ -114,6 +114,7 @@
     "serve-static": "^1.14.1",
     "svg-sprite-loader": "^5.0.0",
     "svgo": "1.3.2",
+    "vue-loader": "^15.9.8",
     "vue-template-compiler": "2.6.11"
   },
   "engines": {
@@ -123,5 +124,10 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "vue-loader": "^15.9.8"
+    }
+  }
 }
