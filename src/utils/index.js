@@ -12,9 +12,6 @@ export function parseTime(time, cFormat) {
   if (arguments.length === 0) {
     return null
   }
-  if (time_str.indexOf('01-01-01') > -1) {
-    return '-'
-  }
   const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
   let date
   if (typeof time === 'object') {
@@ -43,6 +40,13 @@ export function parseTime(time, cFormat) {
     if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     return value.toString().padStart(2, '0')
   })
+
+  // If `time` is invalid, the formatted string becomes `01-01-01`.
+  // This check was previously before `time_str` existed, causing a reference
+  // error during linting and tests. Moved here to avoid that issue.
+  if (time_str.indexOf('01-01-01') > -1) {
+    return '-'
+  }
 
   return time_str
 }
