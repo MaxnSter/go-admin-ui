@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { addClass, removeClass } from '@/utils'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useStore } from 'vuex'
+import { useSettingsStore } from '@/stores'
 
 defineOptions({ name: 'RightPanel' })
 
@@ -26,8 +26,8 @@ const props = withDefaults(defineProps<{ clickNotClose?: boolean; buttonTop?: nu
 
 const show = ref(false)
 const rightPanel = ref<HTMLElement | null>(null)
-const store = useStore()
-const theme = computed(() => store.state.settings.theme)
+const settingsStore = useSettingsStore()
+const theme = computed(() => settingsStore.theme)
 
 function addEventClick() {
   window.addEventListener('click', closeSidebar)

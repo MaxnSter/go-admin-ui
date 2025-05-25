@@ -1,3 +1,5 @@
-export { mapState } from 'pinia'
+import { mapState } from 'pinia'
+
+export { mapState }
 export const mapGetters = mapState
 

@@ -1,10 +1,11 @@
-import store from '@/store'
+import { useUserStore } from '@/stores'
 import type { Directive } from 'vue'
 
 const permission: Directive = {
   mounted(el, binding) {
     const { value } = binding
-    const roles = store.getters && store.getters.roles
+    const userStore = useUserStore()
+    const roles = userStore.roles || []
 
     if (value && Array.isArray(value) && value.length > 0) {
       const hasPermission = roles.some((role: string) => value.includes(role))

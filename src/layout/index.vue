@@ -16,11 +16,11 @@
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel'
+import RightPanel from '@/components/RightPanel/index.vue'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
-import variables from '@/styles/variables.scss'
+import variables from '@/styles/variables.js'
 
 export default {
   name: 'Layout',
@@ -62,8 +62,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/styles/mixin.scss";
-  @import "~@/styles/variables.scss";
+  @import "@/styles/mixin.scss";
 
   .app-wrapper {
     @include clearfix;
@@ -92,7 +91,7 @@ export default {
     top: 0;
     right: 0;
     z-index: 9;
-    width: calc(100% - #{$sideBarWidth});
+    width: calc(100% - 210px);
     transition: width 0.28s;
   }
 

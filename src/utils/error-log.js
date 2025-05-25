@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import { nextTick } from 'vue'
 import store from '@/stores'
 import { isString, isArray } from '@/utils/validate'
 import settings from '@/settings'
@@ -18,18 +18,21 @@ function checkNeed() {
   return false
 }
 
-if (checkNeed()) {
-  Vue.config.errorHandler = function(err, vm, info, a) {
-  // Don't ask me why I use Vue.nextTick, it just a hack.
-  // detail see https://forum.vuejs.org/t/dispatch-in-vue-config-errorhandler-has-some-problem/23500
-    Vue.nextTick(() => {
-      store.dispatch('errorLog/addErrorLog', {
-        err,
-        vm,
-        info,
-        url: window.location.href
+// Vue 3 中错误处理需要在应用实例上配置
+// 这个文件现在只导出错误处理函数，在 main.js 中使用
+export function setupErrorHandler(app) {
+  if (checkNeed()) {
+    app.config.errorHandler = function(err, vm, info) {
+      // 使用 nextTick 来确保错误处理的正确性
+      nextTick(() => {
+        store.dispatch('errorLog/addErrorLog', {
+          err,
+          vm,
+          info,
+          url: window.location.href
+        })
+        console.error(err, info)
       })
-      console.error(err, info)
-    })
+    }
   }
 }

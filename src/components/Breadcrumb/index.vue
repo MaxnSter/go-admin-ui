@@ -13,16 +13,17 @@
 import { compile } from 'path-to-regexp'
 import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import type { BreadcrumbItem } from '@/types/router'
 
 defineOptions({ name: 'Breadcrumb' })
 
 const route = useRoute()
 const router = useRouter()
 
-const levelList = ref<any[] | null>(null)
+const levelList = ref<BreadcrumbItem[]>([])
 
 function getBreadcrumb() {
-  let matched = route.matched.filter(item => item.meta && item.meta.title)
+  let matched = route.matched.filter(item => item.meta && item.meta.title) as BreadcrumbItem[]
   const first = matched[0]
 
   if (!isDashboard(first)) {
@@ -32,10 +33,10 @@ function getBreadcrumb() {
   levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
 }
 
-function isDashboard(route: any) {
+function isDashboard(route: BreadcrumbItem) {
   const name = route && route.name
   if (!name) return false
-  return name.trim() === '首页'
+  return name.toString().trim() === '首页'
 }
 
 function pathCompile(path: string) {
@@ -44,7 +45,7 @@ function pathCompile(path: string) {
   return toPath(params)
 }
 
-function handleLink(item: any) {
+function handleLink(item: BreadcrumbItem) {
   const { redirect, path } = item
   if (redirect) {
     router.push(redirect)

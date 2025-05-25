@@ -14,8 +14,6 @@
 </template>
 
 <script>
-
-import variables from '@/styles/variables.scss'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -31,7 +29,12 @@ export default {
       'appInfo'
     ]),
     variables() {
-      return variables
+      return {
+        menuBg: '#001529',
+        menuLightBg: '#fff',
+        sidebarTitle: '#fff',
+        sidebarLightTitle: '#000'
+      }
     }
   }
 }

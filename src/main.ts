@@ -13,6 +13,7 @@ import '@/styles/admin.scss'
 
 // 图标
 import './icons'
+import { SvgIcon } from './icons'
 
 // 权限控制
 import './permission'
@@ -38,6 +39,10 @@ app.use(ElementPlus)
 Object.entries(Icons).forEach(([key, component]) => {
   app.component(key, component)
 })
+
+// 注册 SvgIcon 组件
+app.component('SvgIcon', SvgIcon)
+
 app.use(PermissionDirective)
 
 // 注册全局组件

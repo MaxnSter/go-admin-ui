@@ -1,5 +1,3 @@
-@import './variables.scss';
-
 @mixin colorBtn($color) {
   background: $color;
 
@@ -14,31 +12,31 @@
 }
 
 .blue-btn {
-  @include colorBtn($blue)
+  @include colorBtn(#324157)
 }
 
 .light-blue-btn {
-  @include colorBtn($light-blue)
+  @include colorBtn(#3A71A8)
 }
 
 .red-btn {
-  @include colorBtn($red)
+  @include colorBtn(#C03639)
 }
 
 .pink-btn {
-  @include colorBtn($pink)
+  @include colorBtn(#E65D6E)
 }
 
 .green-btn {
-  @include colorBtn($green)
+  @include colorBtn(#30B08F)
 }
 
 .tiffany-btn {
-  @include colorBtn($tiffany)
+  @include colorBtn(#4AB7BD)
 }
 
 .yellow-btn {
-  @include colorBtn($yellow)
+  @include colorBtn(#FEC171)
 }
 
 .pan-btn {

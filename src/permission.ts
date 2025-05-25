@@ -1,6 +1,6 @@
 import router from './router'
-import store from './store'
-import { Message } from 'element-ui'
+import { useUserStore, usePermissionStore } from './stores'
+import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { getToken } from '@/utils/auth'
@@ -15,6 +15,8 @@ router.beforeEach(async (to, from) => {
   document.title = getPageTitle(to.meta.title)
 
   const hasToken = getToken()
+  const userStore = useUserStore()
+  const permissionStore = usePermissionStore()
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -22,17 +24,18 @@ router.beforeEach(async (to, from) => {
       return { path: '/' }
     }
 
-    const hasRoles = store.getters.roles && store.getters.roles.length > 0
+    const hasRoles = userStore.roles && userStore.roles.length > 0
     if (hasRoles) {
       return true
     }
     try {
-      const { roles } = await store.dispatch('user/getInfo')
-      const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+      const userInfo = await userStore.getInfo()
+      const roles = userInfo?.roles || []
+      const accessRoutes = await permissionStore.generateRoutes(roles)
       accessRoutes.forEach((route: any) => router.addRoute(route))
       return { ...to, replace: true }
     } catch (error) {
-      Message.error(error || 'Has Error')
+      ElMessage.error(error as string || 'Has Error')
       NProgress.done()
       return `/login?redirect=${to.path}`
     }

@@ -104,4 +104,15 @@ export function setupStore(app: App) {
 
 export default legacyStore
 
+// 导出所有 store hooks
+export {
+  useAppStore,
+  useUserStore,
+  usePermissionStore,
+  useTagsViewStore,
+  useSettingsStore,
+  useSystemStore,
+  useErrorLogStore
+}
+
 

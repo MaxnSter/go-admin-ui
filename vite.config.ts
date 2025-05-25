@@ -14,7 +14,7 @@ export default defineConfig({
       dts: true
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({ importStyle: false })],
       dts: true
     })
   ],
@@ -49,7 +49,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/styles/variables.scss";`
+        // 移除 additionalData 以避免循环导入
+        // additionalData: `@import "@/styles/variables.scss";`
       }
     }
   }

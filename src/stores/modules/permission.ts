@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { asyncRoutes, constantRoutes } from '@/router'
 import { getRoutes } from '@/api/admin/sys-role'
-import Layout from '@/layout'
+import Layout from '@/layout/index.vue'
+import type { RouteRecordRaw } from 'vue-router'
+import type { ApiResponse } from '@/types/api'
 
 function hasPermission(roles: string[], route: any) {
   if (route.meta && route.meta.roles) {
@@ -41,7 +43,7 @@ export function generaMenu(routes: any[], data: any[]) {
 }
 
 export const loadView = (view: string) => {
-  return () => import(`@/views${view}`)
+  return () => import(`@/views${view}.vue`)
 }
 
 export function filterAsyncRoutes(routes: any[], roles: string[]) {
@@ -83,13 +85,17 @@ export const usePermissionStore = defineStore('permission', {
   actions: {
     async generateRoutes(roles: string[]) {
       const loadMenuData: any[] = []
-      const response = await getRoutes()
-      let data = response
-      if (response.code === 200) {
-        data = response.data
+      const response = await getRoutes() as unknown as ApiResponse<any[]>
+      if (response && response.code === 200) {
+        const data = response.data
         Object.assign(loadMenuData, data)
         generaMenu(asyncRoutes, loadMenuData)
-        asyncRoutes.push({ path: '*', redirect: '/', hidden: true })
+        const notFoundRoute: RouteRecordRaw = { 
+          path: '/:pathMatch(.*)*', 
+          redirect: '/',
+          meta: { hidden: true }
+        }
+        asyncRoutes.push(notFoundRoute)
         this.addRoutes = asyncRoutes
         this.routes = constantRoutes.concat(asyncRoutes)
         const sidebarRoutes: any[] = []
