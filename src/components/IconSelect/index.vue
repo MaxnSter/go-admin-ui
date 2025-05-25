@@ -12,33 +12,32 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import icons from './requireIcons'
-export default {
-  name: 'IconSelect',
-  data() {
-    return {
-      name: '',
-      iconList: icons
-    }
-  },
-  methods: {
-    filterIcons() {
-      if (this.name) {
-        this.iconList = this.iconList.filter(item => item.includes(this.name))
-      } else {
-        this.iconList = icons
-      }
-    },
-    selectedIcon(name) {
-      this.$emit('selected', name)
-      document.body.click()
-    },
-    reset() {
-      this.name = ''
-      this.iconList = icons
-    }
+
+defineOptions({ name: 'IconSelect' })
+
+const emit = defineEmits(['selected'])
+const name = ref('')
+const iconList = ref<string[]>([...icons])
+
+function filterIcons() {
+  if (name.value) {
+    iconList.value = icons.filter(item => item.includes(name.value))
+  } else {
+    iconList.value = [...icons]
   }
+}
+
+function selectedIcon(iconName: string) {
+  emit('selected', iconName)
+  document.body.click()
+}
+
+function reset() {
+  name.value = ''
+  iconList.value = [...icons]
 }
 </script>
 

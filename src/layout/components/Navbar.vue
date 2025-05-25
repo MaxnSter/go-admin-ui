@@ -31,61 +31,41 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from '@/components/TopNav'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import Search from '@/components/HeaderSearch'
+<script setup lang="ts">
+import { computed } from 'vue'
+import Breadcrumb from '@/components/Breadcrumb/index.vue'
+import TopNav from '@/components/TopNav/index.vue'
+import Hamburger from '@/components/Hamburger/index.vue'
+import Screenfull from '@/components/Screenfull/index.vue'
+import Search from '@/components/HeaderSearch/index.vue'
+import { useAppStore } from '@/stores/modules/app'
+import { useUserStore } from '@/stores/modules/user'
+import { useSettingsStore } from '@/stores/modules/settings'
 
-export default {
-  components: {
-    Breadcrumb,
-    TopNav,
-    Hamburger,
-    Screenfull,
-    Search
-  },
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar',
-      'device'
-    ]),
-    setting: {
-      get() {
-        return this.$store.state.settings.showSettings
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'showSettings',
-          value: val
-        })
-      }
-    },
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav
-      }
-    }
+const appStore = useAppStore()
+const userStore = useUserStore()
+const settingsStore = useSettingsStore()
 
-  },
-  methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
-    },
-    async logout() {
-      this.$confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('user/LogOut').then(() => {
-          location.reload()
-        })
-      })
-    }
+const sidebar = computed(() => appStore.sidebar)
+const avatar = computed(() => userStore.avatar)
+const device = computed(() => appStore.device)
+
+const setting = computed({
+  get: () => settingsStore.showSettings,
+  set: val => settingsStore.changeSetting({ key: 'showSettings', value: val })
+})
+
+const topNav = computed(() => settingsStore.topNav)
+
+function toggleSideBar() {
+  appStore.toggleSideBar()
+}
+
+async function logout() {
+  const ok = window.confirm('确定注销并退出系统吗？')
+  if (ok) {
+    await userStore.LogOut()
+    location.reload()
   }
 }
 </script>

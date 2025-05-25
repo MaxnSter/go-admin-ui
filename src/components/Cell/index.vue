@@ -25,28 +25,22 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Cell',
-  props: {
-    border: {
-      type: Boolean,
-      default: false
-    },
-    label: {
-      type: String,
-      default: ''
-    },
-    value: {
-      type: String,
-      default: ''
-    },
-    extra: {
-      type: String,
-      default: ''
-    }
-  }
+<script setup lang="ts">
+defineOptions({ name: 'Cell' })
+
+interface Props {
+  border?: boolean
+  label?: string
+  value?: string
+  extra?: string
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  border: false,
+  label: '',
+  value: '',
+  extra: ''
+})
 </script>
 
 <style lang="scss" scoped>

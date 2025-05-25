@@ -12,68 +12,60 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { addClass, removeClass } from '@/utils'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useSettingsStore } from '@/stores'
 
-export default {
-  name: 'RightPanel',
-  props: {
-    clickNotClose: {
-      default: false,
-      type: Boolean
-    },
-    buttonTop: {
-      default: 250,
-      type: Number
-    }
-  },
-  data() {
-    return {
-      show: false
-    }
-  },
-  computed: {
-    theme() {
-      return this.$store.state.settings.theme
-    }
-  },
-  watch: {
-    show(value) {
-      if (value && !this.clickNotClose) {
-        this.addEventClick()
-      }
-      if (value) {
-        addClass(document.body, 'showRightPanel')
-      } else {
-        removeClass(document.body, 'showRightPanel')
-      }
-    }
-  },
-  mounted() {
-    this.insertToBody()
-  },
-  beforeDestroy() {
-    const elx = this.$refs.rightPanel
-    elx.remove()
-  },
-  methods: {
-    addEventClick() {
-      window.addEventListener('click', this.closeSidebar)
-    },
-    closeSidebar(evt) {
-      const parent = evt.target.closest('.rightPanel')
-      if (!parent) {
-        this.show = false
-        window.removeEventListener('click', this.closeSidebar)
-      }
-    },
-    insertToBody() {
-      const elx = this.$refs.rightPanel
-      const body = document.querySelector('body')
-      body.insertBefore(elx, body.firstChild)
-    }
+defineOptions({ name: 'RightPanel' })
+
+const props = withDefaults(defineProps<{ clickNotClose?: boolean; buttonTop?: number }>(), {
+  clickNotClose: false,
+  buttonTop: 250
+})
+
+const show = ref(false)
+const rightPanel = ref<HTMLElement | null>(null)
+const settingsStore = useSettingsStore()
+const theme = computed(() => settingsStore.theme)
+
+function addEventClick() {
+  window.addEventListener('click', closeSidebar)
+}
+
+function closeSidebar(evt: Event) {
+  const parent = (evt.target as HTMLElement).closest('.rightPanel')
+  if (!parent) {
+    show.value = false
+    window.removeEventListener('click', closeSidebar)
   }
 }
+
+function insertToBody() {
+  const elx = rightPanel.value
+  const body = document.querySelector('body')!
+  if (elx) body.insertBefore(elx, body.firstChild)
+}
+
+watch(show, value => {
+  if (value && !props.clickNotClose) {
+    addEventClick()
+  }
+  if (value) {
+    addClass(document.body, 'showRightPanel')
+  } else {
+    removeClass(document.body, 'showRightPanel')
+  }
+})
+
+onMounted(() => {
+  insertToBody()
+})
+
+onBeforeUnmount(() => {
+  const elx = rightPanel.value
+  elx?.remove()
+})
 </script>
 
 <style>

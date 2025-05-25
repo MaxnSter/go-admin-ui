@@ -776,7 +776,7 @@ export default {
       )
       // 添加其他参数
       if (typeof params === 'object' && params) {
-        Object.keys(params).forEach(k => {
+        Object.keys(params || {}).forEach(k => {
           fmData.append(k, params[k])
         })
       }

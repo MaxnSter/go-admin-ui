@@ -1,4 +1,3 @@
-
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0 || !time) {
@@ -63,7 +62,7 @@ export function addDateRange(params, dateRange) {
 // 回显数据字典
 export function selectDictLabel(datas, value) {
   var actions = []
-  Object.keys(datas).map((key) => {
+  Object.keys(datas || {}).map((key) => {
     if (datas[key].value === ('' + value)) {
       actions.push(datas[key].label)
       return false
@@ -74,7 +73,7 @@ export function selectDictLabel(datas, value) {
 
 export function selectItemsLabel(datas, value) {
   var actions = []
-  Object.keys(datas).map((key) => {
+  Object.keys(datas || {}).map((key) => {
     if (datas[key].key === ('' + value)) {
       actions.push(datas[key].value)
       return false

@@ -108,7 +108,7 @@ function mixinMethod(type) {
 
   const methods = minxins[type]
   if (methods) {
-    Object.keys(methods).forEach(key => {
+    Object.keys(methods || {}).forEach(key => {
       list.push(methods[key])
     })
   }

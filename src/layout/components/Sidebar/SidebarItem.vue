@@ -8,7 +8,7 @@
       </app-link>
     </template>
 
-    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body :style="{ backgroundColor: '#000c17' }">
+    <el-sub-menu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body :style="{ backgroundColor: '#000c17' }">
       <template slot="title">
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
@@ -20,16 +20,16 @@
         :base-path="resolvePath(child.path)"
         class="nest-menu"
       />
-    </el-submenu>
+    </el-sub-menu>
   </div>
 </template>
 
 <script>
-import path from 'path'
+import { resolve } from '@/utils/path'
 import { isExternal } from '@/utils/validate'
-import Item from './Item'
-import AppLink from './Link'
-import FixiOSBug from './FixiOSBug'
+import Item from './Item.vue'
+import AppLink from './Link.vue'
+import FixiOSBug from './FixiOSBug.js'
 
 export default {
   name: 'SidebarItem',
@@ -88,7 +88,7 @@ export default {
       if (isExternal(this.basePath)) {
         return this.basePath
       }
-      return path.resolve(this.basePath, routePath)
+      return resolve(this.basePath, routePath)
     }
   }
 }

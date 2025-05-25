@@ -3,56 +3,64 @@
     <el-row :gutter="12">
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="总销售额" total="￥126,560">
-          <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
-          </el-tooltip>
+          <template #action>
+            <el-tooltip class="item" effect="dark" content="指标说明" placement="top-start">
+              <i class="el-icon-warning-outline" />
+            </el-tooltip>
+          </template>
           <div>
             <trend flag="top" style="margin-right: 16px;" rate="12">
-              <span slot="term">周同比</span>
+              <template #term>周同比</template>
             </trend>
             <trend flag="bottom" rate="11">
-              <span slot="term">日同比</span>
+              <template #term>日同比</template>
             </trend>
           </div>
-          <template slot="footer">日均销售额<span>￥ 234.56</span></template>
+          <template #footer>日均销售额<span>￥ 234.56</span></template>
         </chart-card>
       </el-col>
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="访问量" :total="8846">
-          <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
-          </el-tooltip>
+          <template #action>
+            <el-tooltip class="item" effect="dark" content="指标说明" placement="top-start">
+              <i class="el-icon-warning-outline" />
+            </el-tooltip>
+          </template>
           <div>
             <mini-area />
           </div>
-          <template slot="footer">日访问量<span> {{ '1234' }}</span></template>
+          <template #footer>日访问量<span> {{ '1234' }}</span></template>
         </chart-card>
       </el-col>
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="支付笔数" :total="6560">
-          <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
-          </el-tooltip>
+          <template #action>
+            <el-tooltip class="item" effect="dark" content="指标说明" placement="top-start">
+              <i class="el-icon-warning-outline" />
+            </el-tooltip>
+          </template>
           <div>
             <mini-bar />
           </div>
-          <template slot="footer">转化率 <span>60%</span></template>
+          <template #footer>转化率 <span>60%</span></template>
         </chart-card>
       </el-col>
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="运营活动效果" total="78%">
-          <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
-          </el-tooltip>
+          <template #action>
+            <el-tooltip class="item" effect="dark" content="指标说明" placement="top-start">
+              <i class="el-icon-warning-outline" />
+            </el-tooltip>
+          </template>
           <div>
             <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" height="8px" />
           </div>
-          <template slot="footer">
+          <template #footer>
             <trend flag="top" style="margin-right: 16px;" rate="12">
-              <span slot="term">同周比</span>
+              <template #term>同周比</template>
             </trend>
             <trend flag="bottom" rate="80">
-              <span slot="term">日环比</span>
+              <template #term>日环比</template>
             </trend>
           </template>
         </chart-card>
@@ -89,56 +97,38 @@
   </div>
 </template>
 
-<script>
-import ChartCard from '@/components/ChartCard'
-import Trend from '@/components/Trend'
-import MiniArea from '@/components/MiniArea'
-import MiniBar from '@/components/MiniBar'
-import MiniProgress from '@/components/MiniProgress'
-import RankList from '@/components/RankList/index'
+<script setup lang="ts">
+import { ref } from 'vue'
+import ChartCard from '@/components/ChartCard/index.vue'
+import Trend from '@/components/Trend/index.vue'
+import MiniArea from '@/components/MiniArea/index.vue'
+import MiniBar from '@/components/MiniBar/index.vue'
+import MiniProgress from '@/components/MiniProgress/index.vue'
+import RankList from '@/components/RankList/index.vue'
 import Bar from '@/components/Bar.vue'
 
-const barData = []
-const barData2 = []
+// 生成模拟数据
+const barData = ref([])
+const barData2 = ref([])
+const rankList = ref([])
+
+// 初始化数据
 for (let i = 0; i < 12; i += 1) {
-  barData.push({
+  barData.value.push({
     x: `${i + 1}月`,
     y: Math.floor(Math.random() * 1000) + 200
   })
-  barData2.push({
+  barData2.value.push({
     x: `${i + 1}月`,
     y: Math.floor(Math.random() * 1000) + 200
   })
 }
 
-const rankList = []
 for (let i = 0; i < 7; i++) {
-  rankList.push({
+  rankList.value.push({
     name: '白鹭岛 ' + (i + 1) + ' 号店',
     total: 1234.56 - i * 100
   })
-}
-
-export default {
-  name: 'DashboardAdmin',
-  components: {
-    ChartCard,
-    Trend,
-    MiniArea,
-    MiniBar,
-    MiniProgress,
-    RankList,
-    Bar
-  },
-  data() {
-    return {
-      barData,
-      barData2,
-      rankList
-    }
-  },
-  methods: {
-  }
 }
 </script>
 
@@ -162,7 +152,7 @@ export default {
   }
 }
 
-::v-deep .el-tabs__item{
+:deep(.el-tabs__item) {
    padding-left: 16px!important;
    height: 50px;
    line-height: 50px;

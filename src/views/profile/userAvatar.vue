@@ -4,15 +4,14 @@
     <el-dialog :title="title" :visible.sync="open" width="800px" :close-on-click-modal="false">
       <el-row>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">
-          <vue-cropper
+          <cropper
             ref="cropper"
-            :img="options.img"
-            :info="true"
-            :auto-crop="options.autoCrop"
-            :auto-crop-width="options.autoCropWidth"
-            :auto-crop-height="options.autoCropHeight"
-            :fixed-box="options.fixedBox"
-            @realTime="realTime"
+            :src="options.img"
+            :stencil-props="{
+              aspectRatio: 1,
+              resizable: false
+            }"
+            @change="realTime"
           />
         </el-col>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">
@@ -52,24 +51,26 @@
 </template>
 
 <script>
-import store from '@/store'
-import { VueCropper } from 'vue-cropper'
+import { useUserStore } from '@/stores'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 import { uploadAvatar } from '@/api/admin/sys-user'
 
 export default {
-  components: { VueCropper },
+  components: { Cropper },
   props: {
     // eslint-disable-next-line vue/require-default-prop
     user: { type: Object }
   },
   data() {
+    const userStore = useUserStore()
     return {
       // 是否显示弹出层
       open: false,
       // 弹出层标题
       title: '修改头像',
       options: {
-        img: store.getters.avatar, // 裁剪图片的地址
+        img: userStore.avatar || '', // 裁剪图片的地址
         autoCrop: true, // 是否默认生成截图框
         autoCropWidth: 200, // 默认生成截图框宽度
         autoCropHeight: 200, // 默认生成截图框高度
@@ -88,16 +89,16 @@ export default {
     },
     // 向左旋转
     rotateLeft() {
-      this.$refs.cropper.rotateLeft()
+      this.$refs.cropper.rotate(-90)
     },
     // 向右旋转
     rotateRight() {
-      this.$refs.cropper.rotateRight()
+      this.$refs.cropper.rotate(90)
     },
     // 图片缩放
     changeScale(num) {
       num = num || 1
-      this.$refs.cropper.changeScale(num)
+      this.$refs.cropper.zoom(num > 0 ? 1.1 : 0.9)
     },
     // 上传预处理
     beforeUpload(file) {
@@ -113,20 +114,22 @@ export default {
     },
     // 上传图片
     uploadImg() {
-      this.$refs.cropper.getCropBlob(data => {
-        const formData = new FormData()
-        formData.append('upload[]', data)
-        uploadAvatar(formData).then(response => {
-          if (response.code === 200) {
-            this.open = false
-            this.options.img = process.env.VUE_APP_BASE_API + response.data
-            this.msgSuccess(response.msg)
-          } else {
-            this.msgError(response.msg)
-          }
-          this.$refs.cropper.clearCrop()
+      const canvas = this.$refs.cropper.getResult()
+      if (canvas) {
+        canvas.toBlob(data => {
+          const formData = new FormData()
+          formData.append('upload[]', data)
+          uploadAvatar(formData).then(response => {
+            if (response.code === 200) {
+              this.open = false
+              this.options.img = process.env.VUE_APP_BASE_API + response.data
+              this.msgSuccess(response.msg)
+            } else {
+              this.msgError(response.msg)
+            }
+          })
         })
-      })
+      }
     },
     // 实时预览
     realTime(data) {

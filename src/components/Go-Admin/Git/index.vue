@@ -4,18 +4,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'GoAdminGit',
-  data() {
-    return {
-      url: 'https://github.com/wenjianzhang/go-admin'
-    }
-  },
-  methods: {
-    goto() {
-      window.open(this.url)
-    }
-  }
+<script setup lang="ts">
+defineOptions({ name: 'GoAdminGit' })
+const url = 'https://github.com/wenjianzhang/go-admin'
+const goto = () => {
+  window.open(url)
 }
 </script>
