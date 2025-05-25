@@ -9,62 +9,59 @@
   </el-breadcrumb>
 </template>
 
-<script>
+<script setup lang="ts">
 import { compile } from 'path-to-regexp'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-export default {
-  data() {
-    return {
-      levelList: null
-    }
-  },
-  watch: {
-    $route(route) {
-      // if you go to the redirect page, do not update the breadcrumbs
-      if (route.path.startsWith('/redirect/')) {
-        return
-      }
-      this.getBreadcrumb()
-    }
-  },
-  created() {
-    this.getBreadcrumb()
-  },
-  methods: {
-    getBreadcrumb() {
-      // only show routes with meta.title
-      let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
-      const first = matched[0]
+defineOptions({ name: 'Breadcrumb' })
 
-      if (!this.isDashboard(first)) {
-        matched = [{ path: '/index', meta: { title: '首页' }}].concat(matched)
-      }
+const route = useRoute()
+const router = useRouter()
 
-      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
-    },
-    isDashboard(route) {
-      const name = route && route.name
-      if (!name) {
-        return false
-      }
-      return name.trim() === '首页'
-    },
-    pathCompile(path) {
-      // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
-      const { params } = this.$route
-      var toPath = compile(path)
-      return toPath(params)
-    },
-    handleLink(item) {
-      const { redirect, path } = item
-      if (redirect) {
-        this.$router.push(redirect)
-        return
-      }
-      this.$router.push(this.pathCompile(path))
-    }
+const levelList = ref<any[] | null>(null)
+
+function getBreadcrumb() {
+  let matched = route.matched.filter(item => item.meta && item.meta.title)
+  const first = matched[0]
+
+  if (!isDashboard(first)) {
+    matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched)
   }
+
+  levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
 }
+
+function isDashboard(route: any) {
+  const name = route && route.name
+  if (!name) return false
+  return name.trim() === '首页'
+}
+
+function pathCompile(path: string) {
+  const { params } = route
+  const toPath = compile(path)
+  return toPath(params)
+}
+
+function handleLink(item: any) {
+  const { redirect, path } = item
+  if (redirect) {
+    router.push(redirect)
+    return
+  }
+  router.push(pathCompile(path))
+}
+
+watch(
+  () => route.path,
+  (val) => {
+    if (route.path.startsWith('/redirect/')) return
+    getBreadcrumb()
+  }
+)
+
+onMounted(getBreadcrumb)
 </script>
 
 <style lang="scss" scoped>
