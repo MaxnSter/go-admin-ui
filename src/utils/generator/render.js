@@ -95,7 +95,7 @@ export default {
 
     const childObjs = componentChild[confClone.tag]
     if (childObjs) {
-      Object.keys(childObjs).forEach(key => {
+      Object.keys(childObjs || {}).forEach(key => {
         const childFunc = childObjs[key]
         if (confClone[key]) {
           children.push(childFunc(h, confClone, key))
@@ -103,7 +103,7 @@ export default {
       })
     }
 
-    Object.keys(confClone).forEach(key => {
+    Object.keys(confClone || {}).forEach(key => {
       const val = confClone[key]
       if (key === 'vModel') {
         vModel(this, dataObject, confClone.defaultValue)

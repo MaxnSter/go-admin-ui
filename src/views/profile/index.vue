@@ -61,9 +61,9 @@
 </template>
 
 <script>
-import userAvatar from './userAvatar'
-import userInfo from './userInfo'
-import resetPwd from './resetPwd'
+import userAvatar from './userAvatar.vue'
+import userInfo from './userInfo.vue'
+import resetPwd from './resetPwd.vue'
 import { getUserProfile } from '@/api/admin/sys-user'
 
 export default {

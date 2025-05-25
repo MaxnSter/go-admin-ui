@@ -14,7 +14,7 @@
     </template>
 
     <!-- 顶部菜单超出数量折叠 -->
-    <el-submenu v-if="topMenus.length > visibleNumber" index="more">
+    <el-sub-menu v-if="topMenus.length > visibleNumber" index="more">
       <template slot="title">更多菜单</template>
       <template v-for="(item, index) in topMenus">
         <el-menu-item
@@ -24,7 +24,7 @@
         ><svg-icon :icon-class="item.meta.icon" />
           {{ item.meta.title }}</el-menu-item>
       </template>
-    </el-submenu>
+    </el-sub-menu>
   </el-menu>
 </template>
 

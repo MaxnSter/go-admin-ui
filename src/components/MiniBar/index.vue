@@ -9,23 +9,28 @@
   </div>
 </template>
 
-<script>
-import moment from 'moment'
-const data = []
+<script setup lang="ts">
+import { ref } from 'vue'
+import dayjs from 'dayjs'
+
+// 生成模拟数据
+const data = ref([])
 const beginDay = new Date().getTime()
 for (let i = 0; i < 10; i++) {
-  data.push({
-    x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format('YYYY-MM-DD'),
+  data.value.push({
+    x: dayjs(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format('YYYY-MM-DD'),
     y: Math.round(Math.random() * 10)
   })
 }
+
 const tooltip = [
   'x*y',
-  (x, y) => ({
+  (x: string, y: number) => ({
     name: x,
     value: y
   })
 ]
+
 const scale = [{
   dataKey: 'x',
   min: 2
@@ -35,17 +40,8 @@ const scale = [{
   min: 1,
   max: 30
 }]
-export default {
-  name: 'MiniBar',
-  data() {
-    return {
-      data,
-      tooltip,
-      scale,
-      height: 100
-    }
-  }
-}
+
+const height = ref(100)
 </script>
 
 <style lang="scss" scoped>

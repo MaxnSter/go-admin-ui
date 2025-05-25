@@ -1,7 +1,7 @@
 <template>
-  <div :class="classObj" class="app-wrapper" :style="{'--current-color': $store.state.settings.theme}">
+  <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar class="sidebar-container" :style="{ backgroundColor: $store.state.settings.themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }" />
+    <sidebar class="sidebar-container" :style="{ backgroundColor: themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }" />
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -16,11 +16,12 @@
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel'
+import RightPanel from '@/components/RightPanel/index.vue'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-import { mapState } from 'vuex'
-import variables from '@/styles/variables.scss'
+import { useAppStore, useSettingsStore } from '@/stores'
+import { computed } from 'vue'
+import variables from '@/styles/variables.js'
 
 export default {
   name: 'Layout',
@@ -33,37 +34,47 @@ export default {
     TagsView
   },
   mixins: [ResizeMixin],
-  computed: {
-    ...mapState({
-      sidebar: state => state.app.sidebar,
-      device: state => state.app.device,
-      showSettings: state => state.settings.showSettings,
-      needTagsView: state => state.settings.tagsView,
-      fixedHeader: state => state.settings.fixedHeader
-    }),
-    classObj() {
-      return {
-        hideSidebar: !this.sidebar.opened,
-        openSidebar: this.sidebar.opened,
-        withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === 'mobile'
-      }
-    },
-    variables() {
-      return variables
+  setup() {
+    const appStore = useAppStore()
+    const settingsStore = useSettingsStore()
+    
+    const sidebar = computed(() => appStore.sidebar || { opened: true, withoutAnimation: false })
+    const device = computed(() => appStore.device || 'desktop')
+    const showSettings = computed(() => settingsStore.showSettings || false)
+    const needTagsView = computed(() => settingsStore.tagsView || false)
+    const fixedHeader = computed(() => settingsStore.fixedHeader || false)
+    const theme = computed(() => settingsStore.theme || '#409EFF')
+    const themeStyle = computed(() => settingsStore.themeStyle || 'light')
+    
+    const classObj = computed(() => ({
+      hideSidebar: !sidebar.value.opened,
+      openSidebar: sidebar.value.opened,
+      withoutAnimation: sidebar.value.withoutAnimation,
+      mobile: device.value === 'mobile'
+    }))
+    
+    const handleClickOutside = () => {
+      appStore.closeSideBar(false)
     }
-  },
-  methods: {
-    handleClickOutside() {
-      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    
+    return {
+      sidebar,
+      device,
+      showSettings,
+      needTagsView,
+      fixedHeader,
+      theme,
+      themeStyle,
+      classObj,
+      variables,
+      handleClickOutside
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/styles/mixin.scss";
-  @import "~@/styles/variables.scss";
+  @import "@/styles/mixin.scss";
 
   .app-wrapper {
     @include clearfix;
@@ -92,7 +103,7 @@ export default {
     top: 0;
     right: 0;
     z-index: 9;
-    width: calc(100% - #{$sideBarWidth});
+    width: calc(100% - 210px);
     transition: width 0.28s;
   }
 

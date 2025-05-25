@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import SvgIcon from '@/components/SvgIcon'// svg component
+import SvgIcon from '@/components/SvgIcon/index.vue'
 
-// register globally
-Vue.component('svg-icon', SvgIcon)
+// 自动导入所有 svg 图标
+const modules = import.meta.glob('./svg/*.svg', { eager: true })
+const requireAll = () => Object.keys(modules || {})
 
-const req = require.context('./svg', false, /\.svg$/)
-const requireAll = requireContext => requireContext.keys().map(requireContext)
-requireAll(req)
+// 导出 SvgIcon 组件供全局注册
+export { SvgIcon }
+export default requireAll
