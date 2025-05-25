@@ -15,7 +15,7 @@
 
 <script>
 import { computed } from 'vue'
-import { useAppStore } from '@/stores/modules/app'
+import { useSystemStore } from '@/stores/modules/system'
 import { useSettingsStore } from '@/stores/modules/settings'
 
 // Define variables directly since SCSS module import is not working in Vite
@@ -35,10 +35,14 @@ export default {
     }
   },
   setup() {
-    const appStore = useAppStore()
+    const systemStore = useSystemStore()
     const settingsStore = useSettingsStore()
 
-    const appInfo = computed(() => appStore.appInfo)
+    // 提供默认值以防止 undefined 错误
+    const appInfo = computed(() => systemStore.info || {
+      sys_app_logo: '/logo.png',
+      sys_app_name: 'Go Admin 管理系统'
+    })
 
     return {
       appInfo,

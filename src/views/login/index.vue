@@ -233,8 +233,9 @@ const getCode = async () => {
   try {
     const res = await getCodeImg()
     if (res && res.data) {
-      codeUrl.value = 'data:image/gif;base64,' + res.data.img
-      loginForm.uuid = res.data.uuid
+      // 后端返回的 data 字段已经包含完整的 data URL
+      codeUrl.value = res.data
+      loginForm.uuid = res.id
     }
   } catch (error) {
     console.error('获取验证码失败:', error)

@@ -5,23 +5,17 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import SvgIcon from '@/components/SvgIcon/index.vue'
 
-export default {
-  name: 'MenuItem',
-  components: {
-    SvgIcon
+defineProps({
+  icon: {
+    type: String,
+    default: ''
   },
-  props: {
-    icon: {
-      type: String,
-      default: ''
-    },
-    title: {
-      type: String,
-      default: ''
-    }
+  title: {
+    type: String,
+    default: ''
   }
-}
+})
 </script>

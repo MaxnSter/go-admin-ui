@@ -12,7 +12,7 @@ export function listSysApi(query) {
 // 查询SysApi详细
 export function getSysApi(id) {
   return request({
-    url: '/api/v1/sys-api/' + id,
+    url: `/api/v1/sys-api/${  id}`,
     method: 'get'
   })
 }
@@ -22,16 +22,16 @@ export function addSysApi(data) {
   return request({
     url: '/api/v1/sys-api',
     method: 'post',
-    data: data
+    data
   })
 }
 
 // 修改SysApi
 export function updateSysApi(data) {
   return request({
-    url: '/api/v1/sys-api/' + data.id,
+    url: `/api/v1/sys-api/${  data.id}`,
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -40,7 +40,7 @@ export function delSysApi(data) {
   return request({
     url: '/api/v1/sys-api',
     method: 'delete',
-    data: data
+    data
   })
 }
 

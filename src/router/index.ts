@@ -85,6 +85,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: { title: '个人中心', icon: 'user', noCache: true }
       }
     ]
+  },
+  {
+    path: '/test-icons',
+    component: () => import('@/views/test-icons.vue'),
+    name: 'TestIcons',
+    meta: { hidden: true }
   }
 ]
 

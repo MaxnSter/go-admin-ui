@@ -34,7 +34,7 @@ export function parseTime(time, pattern) {
     // Note: getDay() returns 0 on Sunday
     if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     if (result.length > 0 && value < 10) {
-      value = '0' + value
+      value = `0${  value}`
     }
     return value || 0
   })
@@ -50,7 +50,7 @@ export function resetForm(refName) {
 
 // 添加日期范围
 export function addDateRange(params, dateRange) {
-  var search = params
+  const search = params
   search.beginTime = ''
   search.endTime = ''
   if (dateRange != null && dateRange !== '') {
@@ -62,9 +62,9 @@ export function addDateRange(params, dateRange) {
 
 // 回显数据字典
 export function selectDictLabel(datas, value) {
-  var actions = []
+  const actions = []
   Object.keys(datas).map((key) => {
-    if (datas[key].value === ('' + value)) {
+    if (datas[key].value === (`${  value}`)) {
       actions.push(datas[key].label)
       return false
     }
@@ -73,9 +73,9 @@ export function selectDictLabel(datas, value) {
 }
 
 export function selectItemsLabel(datas, value) {
-  var actions = []
+  const actions = []
   Object.keys(datas).map((key) => {
-    if (datas[key].key === ('' + value)) {
+    if (datas[key].key === (`${  value}`)) {
       actions.push(datas[key].value)
       return false
     }
@@ -85,9 +85,9 @@ export function selectItemsLabel(datas, value) {
 
 // 字符串格式化(%s )
 export function sprintf(str) {
-  var args = arguments; var flag = true; var i = 1
+  const args = arguments; let flag = true; let i = 1
   str = str.replace(/%s/g, function() {
-    var arg = args[i++]
+    const arg = args[i++]
     if (typeof arg === 'undefined') {
       flag = false
       return ''

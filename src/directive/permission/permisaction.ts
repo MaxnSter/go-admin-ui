@@ -19,7 +19,7 @@ const permisaction: Directive = {
         el.parentNode && el.parentNode.removeChild(el)
       }
     } else {
-      throw new Error(`请设置操作权限标签值`)
+      throw new Error('请设置操作权限标签值')
     }
   }
 }

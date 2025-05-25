@@ -20,7 +20,7 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['Authorization'] = 'Bearer ' + getToken()
+      config.headers['Authorization'] = `Bearer ${  getToken()}`
       config.headers['Content-Type'] = 'application/json'
     }
     return config
@@ -107,7 +107,7 @@ service.interceptors.response.use(
       })
       return
     }
-    console.log('err' + error) // for debug
+    console.log(`err${  error}`) // for debug
 
     ElMessage({
       message: error.message,

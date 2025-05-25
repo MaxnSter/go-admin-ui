@@ -123,7 +123,7 @@
 
 <script>import { CaretBottom, CaretTop } from '@element-plus/icons-vue'
 
-import Cell from '@/components/Cell/index'
+import Cell from '@/components/Cell/index.vue'
 import {
   getServer
 } from '@/api/monitor/server'

@@ -43,7 +43,7 @@ module.exports = {
       path: `src/views/${name}/index.vue`,
       templateFile: 'plop-templates/view/index.hbs',
       data: {
-        name: name,
+        name,
         template: data.blocks.includes('template'),
         script: data.blocks.includes('script'),
         style: data.blocks.includes('style')

@@ -182,8 +182,8 @@
 import { getGenTable, updateGenTable, getTableTree } from '@/api/tools/gen'
 // import { listTable } from '@/api/tools/gen'
 import { optionselect as getDictOptionselect } from '@/api/admin/dict/type'
-import basicInfoForm from './basicInfoForm'
-import genInfoForm from './genInfoForm'
+import basicInfoForm from './basicInfoForm.vue'
+import genInfoForm from './genInfoForm.vue'
 export default {
   name: 'GenEdit',
   components: {

@@ -73,6 +73,28 @@ export const useUserStore = defineStore('user', () => {
 
       return response
     } catch (error) {
+      // 在开发环境下提供模拟用户信息
+      if ((import.meta as any).env.DEV) {
+        const mockUserInfo = {
+          data: {
+            roles: ['admin'],
+            name: 'Mock Admin',
+            avatar: '',
+            introduction: 'Mock user for development',
+            permissions: ['*:*:*']
+          }
+        }
+        
+        // 更新状态
+        roles.value = mockUserInfo.data.roles
+        name.value = mockUserInfo.data.name
+        avatar.value = auth.formatAvatarUrl(mockUserInfo.data.avatar)
+        introduction.value = mockUserInfo.data.introduction
+        permisaction.value = mockUserInfo.data.permissions
+        
+        return mockUserInfo
+      }
+      
       throw error
     }
   }
@@ -127,7 +149,7 @@ export const useUserStore = defineStore('user', () => {
    * 动态修改权限（用于角色切换）
    */
   const changeRoles = async (role: string): Promise<void> => {
-    const newToken = role + '-token'
+    const newToken = `${role  }-token`
 
     token.value = newToken
     auth.saveToken(newToken)

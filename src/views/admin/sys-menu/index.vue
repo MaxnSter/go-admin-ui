@@ -364,7 +364,7 @@ import { getDicts, selectDictLabel } from '@/utils/dict'
 
 import Treeselect from '@zanmato/vue3-treeselect'
 import '@zanmato/vue3-treeselect/dist/vue3-treeselect.min.css'
-import IconSelect from '@/components/IconSelect'
+import IconSelect from '@/components/IconSelect/index.vue'
 
 // 组件引用
 const queryFormRef = ref()

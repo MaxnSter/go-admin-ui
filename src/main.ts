@@ -20,6 +20,12 @@ import directives from '@/directive'
 // @ts-ignore - icons 模块没有类型声明
 import icons from './icons'
 
+// 导入 SVG 图标虚拟模块
+import 'virtual:svg-icons-register'
+
+// 手动加载 SVG 图标（备用方案）
+import { loadSvgIcons } from '@/utils/svg-icons'
+
 // 权限控制
 import './permission'
 
@@ -49,7 +55,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.component('Pagination', Pagination)
 app.component('BasicLayout', BasicLayout)
 
-// 全局属性（替代 Vue.prototype）
+// 全局属性（Vue 3 方式）
 app.config.globalProperties.msgSuccess = function(msg: string) {
   import('element-plus').then(({ ElMessage }) => {
     ElMessage({ showClose: true, message: msg, type: 'success' })
@@ -74,4 +80,12 @@ console.info(`欢迎使用go-admin，谢谢您对我们的支持，在使用过�
  谢谢！`)
 
 // 挂载应用
-app.mount('#app') 
+app.mount('#app')
+
+// 手动加载 SVG 图标（如果 vite-plugin-svg-icons 没有工作）
+setTimeout(() => {
+  if (!document.getElementById('__svg__icons__dom__')) {
+    console.log('🔧 vite-plugin-svg-icons 未工作，使用手动加载')
+    loadSvgIcons()
+  }
+}, 100) 

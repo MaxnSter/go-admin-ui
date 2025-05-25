@@ -11,17 +11,17 @@
         :closable="item.fullPath === '/dashboard' ? false : true"
         :name="item.fullPath"
       >
-        <router-link
-          ref="tag"
-          slot="label"
-          tag="span"
-          class="tags-view-item"
-          :style="{ color: item.fullPath === $route.fullPath ? theme : '' }"
-          :to="{ path: item.path, query: item.query, fullPath: item.fullPath }"
-          @contextmenu.prevent="openMenu(item,$event)"
-        >
-          {{ item.title }}
-        </router-link>
+        <template #label>
+          <router-link
+            ref="tag"
+            class="tags-view-item"
+            :style="{ color: item.fullPath === $route.fullPath ? theme : '' }"
+            :to="{ path: item.path, query: item.query, fullPath: item.fullPath }"
+            @contextmenu.prevent="openMenu(item,$event)"
+          >
+            {{ item.title }}
+          </router-link>
+        </template>
       </el-tab-pane>
     </el-tabs>
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
@@ -34,54 +34,39 @@
 </template>
 
 <script>
-import path from 'path'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useTagsViewStore } from '@/stores/modules/tagsView'
+import { usePermissionStore } from '@/stores/modules/permission'
+import { useSettingsStore } from '@/stores/modules/settings'
+import path from '@/utils/path'
 
 export default {
-  data() {
-    return {
-      editableTabsValue: '/',
-      top: 0,
-      left: 0,
-      selectedTag: {},
-      affixTags: [],
-      visible: false
-    }
-  },
-  computed: {
-    visitedViews() {
-      return this.$store.state.tagsView.visitedViews
-    },
-    routes() {
-      return this.$store.state.permission.routes
-    },
-    theme() {
-      return this.$store.state.settings.theme
-    }
-  },
-  watch: {
-    $route() {
-      this.addTags()
-    },
-    visible(value) {
-      if (value) {
-        document.body.addEventListener('click', this.closeMenu)
-      } else {
-        document.body.removeEventListener('click', this.closeMenu)
-      }
-    }
-  },
-  mounted() {
-    this.initTags()
-    this.addTags()
-    this.isActive()
-    this.beforeUnload()
-  },
-  methods: {
-    // 刷新前缓存tab
-    beforeUnload() {
+  setup() {
+    const route = useRoute()
+    const router = useRouter()
+    const tagsViewStore = useTagsViewStore()
+    const permissionStore = usePermissionStore()
+    const settingsStore = useSettingsStore()
+
+    // 响应式数据
+    const editableTabsValue = ref('/')
+    const top = ref(0)
+    const left = ref(0)
+    const selectedTag = ref({})
+    const affixTags = ref([])
+    const visible = ref(false)
+
+    // 计算属性
+    const visitedViews = computed(() => tagsViewStore.visitedViews)
+    const routes = computed(() => permissionStore.routes)
+    const theme = computed(() => settingsStore.theme)
+
+    // 方法
+    const beforeUnload = () => {
       // 监听页面刷新
       window.addEventListener('beforeunload', () => {
-        const tabViews = this.visitedViews.map(item => {
+        const tabViews = visitedViews.value.map(item => {
           return {
             fullPath: item.fullPath,
             hash: item.hash,
@@ -98,30 +83,33 @@ export default {
       // 页面初始化加载判断缓存中是否有数据
       const oldViews = JSON.parse(sessionStorage.getItem('tabViews')) || []
       if (oldViews.length > 0) {
-        this.$store.state.tagsView.visitedViews = oldViews
+        // 直接设置 visitedViews，因为 Pinia 是响应式的
+        tagsViewStore.visitedViews.splice(0, tagsViewStore.visitedViews.length, ...oldViews)
       }
-    },
-    handleTagsOver(index) {
+    }
+    const handleTagsOver = (index) => {
       const tags = document.querySelectorAll('.tags-item')
       const item = tags[index - 1]
-      item.style.cssText = `color:${this.$store.state.settings.theme};background:${
-        this.$store.state.settings.theme.colorRgb()
+      item.style.cssText = `color:${theme.value};background:${
+        theme.value.colorRgb()
       }`
-    },
-    handleTagsLeave(index) {
+    }
+
+    const handleTagsLeave = (index) => {
       const tags = document.querySelectorAll('.tags-item')
       const item = tags[index - 1]
       item.style.cssText = `color:#606266`
-    },
-    isActive() {
-      const index = this.visitedViews.findIndex(item => item.fullPath === this.$route.fullPath)
+    }
+    const isActive = () => {
+      const index = visitedViews.value.findIndex(item => item.fullPath === route.fullPath)
       const pathIndex = index > -1 ? index : 0
-      this.editableTabsValue = this.visitedViews[pathIndex].fullPath
-    },
-    isAffix(tag) {
+      editableTabsValue.value = visitedViews.value[pathIndex].fullPath
+    }
+
+    const isAffix = (tag) => {
       return tag.meta && tag.meta.affix
-    },
-    filterAffixTags(routes, basePath = '/') {
+    }
+    const filterAffixTags = (routes, basePath = '/') => {
       let tags = []
       routes.forEach(route => {
         if (route.meta && route.meta.affix) {
@@ -134,116 +122,168 @@ export default {
           })
         }
         if (route.children) {
-          const tempTags = this.filterAffixTags(route.children, route.path)
+          const tempTags = filterAffixTags(route.children, route.path)
           if (tempTags.length >= 1) {
             tags = [...tags, ...tempTags]
           }
         }
       })
       return tags
-    },
-    initTags() {
-      const affixTags = this.affixTags = this.filterAffixTags(this.routes)
-      for (const tag of affixTags) {
+    }
+
+    const initTags = () => {
+      const affixTagsList = filterAffixTags(routes.value)
+      affixTags.value = affixTagsList
+      for (const tag of affixTagsList) {
         // Must have tag name
         if (tag.name) {
-          this.$store.dispatch('tagsView/addVisitedView', tag)
+          tagsViewStore.addVisitedView(tag)
         }
       }
-    },
-    addTags() {
-      const { name } = this.$route
+    }
+
+    const addTags = () => {
+      const { name } = route
       if (name) {
-        this.$store.dispatch('tagsView/addView', this.$route)
-        this.isActive()
+        tagsViewStore.addView(route)
+        isActive()
       }
       return false
-    },
-    moveToCurrentTag() {
-      const tags = this.$refs.tag
-      this.$nextTick(() => {
+    }
+    const moveToCurrentTag = () => {
+      const tags = document.querySelectorAll('.tags-view-item')
+      nextTick(() => {
         for (const tag of tags) {
-          if (tag.to.path === this.$route.path) {
-            // this.$refs.scrollPane.moveToTarget(tag)
+          if (tag.to && tag.to.path === route.path) {
             // when query is different then update
-            if (tag.to.fullPath !== this.$route.fullPath) {
-              this.$store.dispatch('tagsView/updateVisitedView', this.$route)
+            if (tag.to.fullPath !== route.fullPath) {
+              tagsViewStore.updateVisitedView(route)
             }
             break
           }
         }
       })
-    },
-    refreshSelectedTag(view) {
-      this.$store.dispatch('tagsView/delCachedView', view).then(() => {
-        const { fullPath } = view
-        this.$nextTick(() => {
-          this.$router.replace({
-            path: '/redirect' + fullPath
-          })
+    }
+    const refreshSelectedTag = async (view) => {
+      await tagsViewStore.delCachedView(view)
+      const { fullPath } = view
+      nextTick(() => {
+        router.replace({
+          path: '/redirect' + fullPath
         })
       })
-    },
-    closeSelectedTag(view) {
+    }
+
+    const closeSelectedTag = async (view) => {
       const routerPath = view.fullPath ? view.fullPath : view
-      const index = this.visitedViews.findIndex(item => item.fullPath === routerPath)
+      const index = visitedViews.value.findIndex(item => item.fullPath === routerPath)
       if (index > -1) {
-        const path = this.visitedViews[index]
-        this.$store.dispatch('tagsView/delView', path).then(({ visitedViews }) => {
-          if (this.editableTabsValue === path.fullPath) {
-            this.toLastView(visitedViews, path)
-          }
-        })
-      }
-    },
-    closeOthersTags() {
-      this.$router.push(this.selectedTag.path).catch(e => e)
-      this.$store.dispatch('tagsView/delOthersViews', this.selectedTag).then(() => {
-        this.moveToCurrentTag()
-      })
-    },
-    closeAllTags(view) {
-      this.$store.dispatch('tagsView/delAllViews').then(({ visitedViews }) => {
-        if (this.affixTags.some(tag => tag.path === view.path)) {
-          return
+        const path = visitedViews.value[index]
+        const { visitedViews: newVisitedViews } = await tagsViewStore.delView(path)
+        if (editableTabsValue.value === path.fullPath) {
+          toLastView(newVisitedViews, path)
         }
-        this.toLastView(visitedViews, view)
-      })
-    },
-    toLastView(visitedViews, view) {
+      }
+    }
+    const closeOthersTags = async () => {
+      router.push(selectedTag.value.path).catch(e => e)
+      await tagsViewStore.delOthersViews(selectedTag.value)
+      moveToCurrentTag()
+    }
+
+    const closeAllTags = async (view) => {
+      const { visitedViews: newVisitedViews } = await tagsViewStore.delAllViews()
+      if (affixTags.value.some(tag => tag.path === view.path)) {
+        return
+      }
+      toLastView(newVisitedViews, view)
+    }
+
+    const toLastView = (visitedViews, view) => {
       const latestView = visitedViews.slice(-1)[0]
       if (latestView) {
-        this.$router.push(latestView.fullPath).catch(err => err)
+        router.push(latestView.fullPath).catch(err => err)
       } else {
         // now the default is to redirect to the home page if there is no tags-view,
         // you can adjust it according to your needs.
         if (view.name === 'Dashboard') {
           // to reload home page
-          this.$router.replace({ path: '/redirect' + view.fullPath })
+          router.replace({ path: '/redirect' + view.fullPath })
         } else {
-          this.$router.push('/')
+          router.push('/')
         }
       }
-    },
-    openMenu(tag, e) {
+    }
+    const openMenu = (tag, e) => {
       const menuMinWidth = 105
-      const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
-      const offsetWidth = this.$el.offsetWidth // container width
+      const container = document.getElementById('tags-view-container')
+      const offsetLeft = container?.getBoundingClientRect().left || 0 // container margin left
+      const offsetWidth = container?.offsetWidth || 0 // container width
       const maxLeft = offsetWidth - menuMinWidth // left boundary
-      const left = e.clientX - offsetLeft + 15 // 15: margin right
+      const leftPos = e.clientX - offsetLeft + 15 // 15: margin right
 
-      if (left > maxLeft) {
-        this.left = maxLeft
+      if (leftPos > maxLeft) {
+        left.value = maxLeft
       } else {
-        this.left = left
+        left.value = leftPos
       }
 
-      this.top = e.clientY
-      this.visible = true
-      this.selectedTag = tag
-    },
-    closeMenu() {
-      this.visible = false
+      top.value = e.clientY
+      visible.value = true
+      selectedTag.value = tag
+    }
+
+    const closeMenu = () => {
+      visible.value = false
+    }
+
+    // 监听器
+    watch(() => route, () => {
+      addTags()
+    })
+
+    watch(visible, (value) => {
+      if (value) {
+        document.body.addEventListener('click', closeMenu)
+      } else {
+        document.body.removeEventListener('click', closeMenu)
+      }
+    })
+
+    // 生命周期
+    onMounted(() => {
+      initTags()
+      addTags()
+      isActive()
+      beforeUnload()
+    })
+
+    return {
+      editableTabsValue,
+      top,
+      left,
+      selectedTag,
+      affixTags,
+      visible,
+      visitedViews,
+      routes,
+      theme,
+      beforeUnload,
+      handleTagsOver,
+      handleTagsLeave,
+      isActive,
+      isAffix,
+      filterAffixTags,
+      initTags,
+      addTags,
+      moveToCurrentTag,
+      refreshSelectedTag,
+      closeSelectedTag,
+      closeOthersTags,
+      closeAllTags,
+      toLastView,
+      openMenu,
+      closeMenu
     }
   }
 }
@@ -272,7 +312,7 @@ String.prototype.colorRgb = function() {
 </script>
 
 <style lang="scss" scoped>
-.tags-view-container ::v-deep{
+.tags-view-container :deep() {
   height: 43px;
   width: 100%;
   background: #fff;

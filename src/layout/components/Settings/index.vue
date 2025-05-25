@@ -67,83 +67,63 @@
 </template>
 
 <script>
+import { ref, computed } from 'vue'
+import { useSettingsStore } from '@/stores/modules/settings'
+import { usePermissionStore } from '@/stores/modules/permission'
 import ThemePicker from '@/components/ThemePicker/index.vue'
 
 export default {
   components: { ThemePicker },
-  data() {
-    return {
-      activeColor: this.$store.state.settings.theme
-    }
-  },
-  computed: {
-    theme() {
-      return this.$store.state.settings.theme
-    },
-    themeStyle() {
-      return this.$store.state.settings.themeStyle
-    },
-    fixedHeader: {
-      get() {
-        return this.$store.state.settings.fixedHeader
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'fixedHeader',
-          value: val
-        })
-      }
-    },
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'topNav',
-          value: val
-        })
+  setup() {
+    const settingsStore = useSettingsStore()
+    const permissionStore = usePermissionStore()
+    
+    const activeColor = ref(settingsStore.theme)
+
+    const fixedHeader = computed({
+      get: () => settingsStore.fixedHeader,
+      set: (val) => settingsStore.changeSetting('fixedHeader', val)
+    })
+
+    const topNav = computed({
+      get: () => settingsStore.topNav,
+      set: (val) => {
+        settingsStore.changeSetting('topNav', val)
         if (!val) {
-          this.$store.commit('permission/SET_SIDEBAR_ROUTERS', this.$store.state.permission.defaultRoutes)
+          permissionStore.setSidebarRouters(permissionStore.defaultRoutes)
         }
       }
-    },
-    tagsView: {
-      get() {
-        return this.$store.state.settings.tagsView
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'tagsView',
-          value: val
-        })
-      }
-    },
-    sidebarLogo: {
-      get() {
-        return this.$store.state.settings.sidebarLogo
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'sidebarLogo',
-          value: val
-        })
-      }
+    })
+
+    const tagsView = computed({
+      get: () => settingsStore.tagsView,
+      set: (val) => settingsStore.changeSetting('tagsView', val)
+    })
+
+    const sidebarLogo = computed({
+      get: () => settingsStore.sidebarLogo,
+      set: (val) => settingsStore.changeSetting('sidebarLogo', val)
+    })
+
+    const themeChange = (val) => {
+      activeColor.value = val
+      settingsStore.changeSetting('theme', val)
     }
-  },
-  methods: {
-    themeChange(val) {
-      this.activeColor = val
-      this.$store.dispatch('settings/changeSetting', {
-        key: 'theme',
-        value: val
-      })
-    },
-    handleTheme(val) {
-      this.$store.dispatch('settings/changeSetting', {
-        key: 'themeStyle',
-        value: val
-      })
+
+    const handleTheme = (val) => {
+      settingsStore.changeSetting('themeStyle', val)
+    }
+
+    return {
+      activeColor,
+      theme: computed(() => settingsStore.theme),
+      themeStyle: computed(() => settingsStore.themeStyle),
+      fixedHeader,
+      topNav,
+      tagsView,
+      sidebarLogo,
+      themeChange,
+      handleTheme
     }
   }
 }

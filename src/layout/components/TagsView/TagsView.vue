@@ -16,50 +16,37 @@
 </template>
 
 <script>
-import path from 'path'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useTagsViewStore } from '@/stores/modules/tagsView'
+import { usePermissionStore } from '@/stores/modules/permission'
+import { useSettingsStore } from '@/stores/modules/settings'
+import path from '@/utils/path'
+
 export default {
   name: 'TagsView',
-  data() {
-    return {
-      editableTabsValue: '1'
+  setup() {
+    const route = useRoute()
+    const tagsViewStore = useTagsViewStore()
+    const permissionStore = usePermissionStore()
+    const settingsStore = useSettingsStore()
+
+    const editableTabsValue = ref('1')
+    const affixTags = ref([])
+
+    const visitedViews = computed(() => tagsViewStore.visitedViews)
+    const routes = computed(() => permissionStore.routes)
+    const theme = computed(() => settingsStore.theme)
+
+    const isActive = (route) => {
+      return route.path === route.path
     }
-  },
-  computed: {
-    visitedViews() {
-      return this.$store.state.tagsView.visitedViews
-    },
-    routes() {
-      return this.$store.state.permission.routes
-    },
-    theme() {
-      return this.$store.state.settings.theme
-    }
-  },
-  watch: {
-    $route() {
-      this.addTags()
-      this.moveToCurrentTag()
-    },
-    visible(value) {
-      if (value) {
-        document.body.addEventListener('click', this.closeMenu)
-      } else {
-        document.body.removeEventListener('click', this.closeMenu)
-      }
-    }
-  },
-  mounted() {
-    this.initTags()
-    this.addTags()
-  },
-  methods: {
-    isActive(route) {
-      return route.path === this.$route.path
-    },
-    isAffix(tag) {
+
+    const isAffix = (tag) => {
       return tag.meta && tag.meta.affix
-    },
-    filterAffixTags(routes, basePath = '/') {
+    }
+
+    const filterAffixTags = (routes, basePath = '/') => {
       let tags = []
       routes.forEach(route => {
         if (route.meta && route.meta.affix) {
@@ -72,29 +59,53 @@ export default {
           })
         }
         if (route.children) {
-          const tempTags = this.filterAffixTags(route.children, route.path)
+          const tempTags = filterAffixTags(route.children, route.path)
           if (tempTags.length >= 1) {
             tags = [...tags, ...tempTags]
           }
         }
       })
       return tags
-    },
-    initTags() {
-      const affixTags = (this.affixTags = this.filterAffixTags(this.routes))
-      for (const tag of affixTags) {
+    }
+
+    const initTags = () => {
+      const affixTagsList = filterAffixTags(routes.value)
+      affixTags.value = affixTagsList
+      for (const tag of affixTagsList) {
         // Must have tag name
         if (tag.name) {
-          this.$store.dispatch('tagsView/addVisitedView', tag)
+          tagsViewStore.addVisitedView(tag)
         }
       }
-    },
-    addTags() {
-      const { name } = this.$route
+    }
+
+    const addTags = () => {
+      const { name } = route
       if (name) {
-        this.$store.dispatch('tagsView/addView', this.$route)
+        tagsViewStore.addView(route)
       }
       return false
+    }
+
+    watch(() => route, () => {
+      addTags()
+    })
+
+    onMounted(() => {
+      initTags()
+      addTags()
+    })
+
+    return {
+      editableTabsValue,
+      visitedViews,
+      routes,
+      theme,
+      isActive,
+      isAffix,
+      filterAffixTags,
+      initTags,
+      addTags
     }
   }
 }

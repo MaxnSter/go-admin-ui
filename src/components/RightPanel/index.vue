@@ -12,68 +12,69 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useSettingsStore } from '@/stores/modules/settings'
 import { addClass, removeClass } from '@/utils'
 
-export default {
-  name: 'RightPanel',
-  props: {
-    clickNotClose: {
-      default: false,
-      type: Boolean
-    },
-    buttonTop: {
-      default: 250,
-      type: Number
-    }
+const props = defineProps({
+  clickNotClose: {
+    default: false,
+    type: Boolean
   },
-  data() {
-    return {
-      show: false
-    }
-  },
-  computed: {
-    theme() {
-      return this.$store.state.settings.theme
-    }
-  },
-  watch: {
-    show(value) {
-      if (value && !this.clickNotClose) {
-        this.addEventClick()
-      }
-      if (value) {
-        addClass(document.body, 'showRightPanel')
-      } else {
-        removeClass(document.body, 'showRightPanel')
-      }
-    }
-  },
-  mounted() {
-    this.insertToBody()
-  },
-  beforeDestroy() {
-    const elx = this.$refs.rightPanel
-    elx.remove()
-  },
-  methods: {
-    addEventClick() {
-      window.addEventListener('click', this.closeSidebar)
-    },
-    closeSidebar(evt) {
-      const parent = evt.target.closest('.rightPanel')
-      if (!parent) {
-        this.show = false
-        window.removeEventListener('click', this.closeSidebar)
-      }
-    },
-    insertToBody() {
-      const elx = this.$refs.rightPanel
-      const body = document.querySelector('body')
-      body.insertBefore(elx, body.firstChild)
-    }
+  buttonTop: {
+    default: 250,
+    type: Number
+  }
+})
+
+const settingsStore = useSettingsStore()
+const rightPanel = ref(null)
+const show = ref(false)
+
+const theme = computed(() => {
+  return settingsStore.theme
+})
+
+const addEventClick = () => {
+  window.addEventListener('click', closeSidebar)
+}
+
+const closeSidebar = (evt) => {
+  const parent = evt.target.closest('.rightPanel')
+  if (!parent) {
+    show.value = false
+    window.removeEventListener('click', closeSidebar)
   }
 }
+
+const insertToBody = () => {
+  const elx = rightPanel.value
+  const body = document.querySelector('body')
+  body.insertBefore(elx, body.firstChild)
+}
+
+watch(show, (value) => {
+  if (value && !props.clickNotClose) {
+    addEventClick()
+  }
+  if (value) {
+    addClass(document.body, 'showRightPanel')
+  } else {
+    removeClass(document.body, 'showRightPanel')
+  }
+})
+
+onMounted(() => {
+  insertToBody()
+})
+
+onBeforeUnmount(() => {
+  const elx = rightPanel.value
+  if (elx && elx.parentNode) {
+    elx.parentNode.removeChild(elx)
+  }
+})
 </script>
 
 <style>
@@ -97,7 +98,7 @@ export default {
 
 .rightPanel {
   width: 100%;
-  max-width: 300px;
+  max-width: 260px;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -137,6 +138,7 @@ export default {
   cursor: pointer;
   color: #fff;
   line-height: 48px;
+
   i {
     font-size: 24px;
     line-height: 48px;

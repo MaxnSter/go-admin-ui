@@ -166,7 +166,13 @@
             </el-tag>
           </div>
           <div id="codemirror">
-            <codemirror ref="cmEditor" :value="codestr" :options="cmOptions" />
+            <CodeMirror 
+              v-model="codestr" 
+              :mode="cmOptions.mode"
+              theme="dark"
+              :readonly="true"
+              style="height: 600px;"
+            />
           </div>
           <!-- <el-tabs v-model="preview.activeName" tab-position="left">
             <el-tab-pane
@@ -191,17 +197,13 @@
 <script>import { Search, Refresh, Edit, Delete, Download, Upload, View } from '@element-plus/icons-vue'
 
 import { listTable, previewTable, delTable, toDBTable, toProjectTableCheckRole, apiToFile } from '@/api/tools/gen'
-import importTable from './importTable'
+import importTable from './importTable.vue'
 import { downLoadFile } from '@/utils/zipdownload'
-import { codemirror } from 'vue-codemirror'
-import 'codemirror/theme/material-palenight.css'
-import 'codemirror/mode/javascript/javascript'
-import 'codemirror/mode/go/go'
-import 'codemirror/mode/vue/vue'
+import CodeMirror from '@/components/CodeMirror/index.vue'
 
 export default {
   name: 'Gen',
-  components: { importTable, codemirror },
+  components: { importTable, CodeMirror },
   data() {
     return {
       cmOptions: {
@@ -375,25 +377,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
- .el-dialog-container ::v-deep{
+ .el-dialog-container :deep(.el-scrollbar__view) {
+   height: 100%;
+ }
+ .el-dialog-container {
    overflow: hidden;
-   .el-scrollbar__view{
-     height: 100%;
-   }
-   .pre{
+   :deep(.pre) {
      height: 546px;
-      overflow: hidden;
-      .el-scrollbar{
-        height: 100%;
-      }
+     overflow: hidden;
+     .el-scrollbar {
+       height: 100%;
+     }
    }
-   .el-scrollbar__wrap::-webkit-scrollbar{
+   :deep(.el-scrollbar__wrap::-webkit-scrollbar) {
      display: none;
    }
  }
- ::v-deep .el-dialog__body{
+ :deep(.el-dialog__body) {
     padding: 0 20px;
-    margin:0;
+    margin: 0;
   }
   .tag-group {
     margin: 0 0 10px -10px;

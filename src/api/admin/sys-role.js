@@ -12,7 +12,7 @@ export function listRole(query) {
 // 查询角色详细
 export function getRole(roleId) {
   return request({
-    url: '/api/v1/role/' + roleId,
+    url: `/api/v1/role/${  roleId}`,
     method: 'get'
   })
 }
@@ -22,16 +22,16 @@ export function addRole(data) {
   return request({
     url: '/api/v1/role',
     method: 'post',
-    data: data
+    data
   })
 }
 
 // 修改角色
 export function updateRole(data, roleId) {
   return request({
-    url: '/api/v1/role/' + roleId,
+    url: `/api/v1/role/${  roleId}`,
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -40,7 +40,7 @@ export function dataScope(data) {
   return request({
     url: '/api/v1/roledatascope',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -53,7 +53,7 @@ export function changeRoleStatus(roleId, status) {
   return request({
     url: '/api/v1/role-status',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -68,7 +68,7 @@ export function delRole(roleId) {
 
 export function getListrole(id) {
   return request({
-    url: '/api/v1/menu/role/' + id,
+    url: `/api/v1/menu/role/${id}`,
     method: 'get'
   })
 }
@@ -77,6 +77,16 @@ export function getRoutes() {
   return request({
     url: '/api/v1/menurole',
     method: 'get'
+  })
+}
+
+// 导出角色
+export function exportRole(query) {
+  return request({
+    url: '/api/v1/role/export',
+    method: 'get',
+    params: query,
+    responseType: 'blob'
   })
 }
 

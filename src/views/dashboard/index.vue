@@ -1,28 +1,39 @@
 <template>
-  <div class="dashboard">
-    <h1>Go Admin Dashboard</h1>
-    <p>Vue 3 + Vite + TypeScript + Vue Router 4 + Pinia</p>
-    <p>任务1：核心框架迁移完成 ✅</p>
+  <div class="dashboard-container">
+    <component :is="currentRole" />
   </div>
 </template>
 
-<script setup lang="ts">
-// 简单的测试页面
+<script>
+import { ref, computed, onMounted } from 'vue'
+import { useUserStore } from '@/stores/modules/user'
+import adminDashboard from './admin/index.vue'
+import editorDashboard from './editor/index.vue'
+
+export default {
+  name: 'Dashboard',
+  components: { 
+    adminDashboard, 
+    editorDashboard 
+  },
+  setup() {
+    const userStore = useUserStore()
+    const currentRole = ref('adminDashboard')
+
+    // 计算属性：获取用户角色
+    const roles = computed(() => userStore.roles)
+
+    onMounted(() => {
+      // 根据用户角色决定显示哪个 dashboard
+      if (!roles.value.includes('admin')) {
+        currentRole.value = 'editorDashboard'
+      }
+    })
+
+    return {
+      currentRole,
+      roles
+    }
+  }
+}
 </script>
-
-<style scoped>
-.dashboard {
-  padding: 20px;
-  text-align: center;
-}
-
-h1 {
-  color: #409eff;
-  margin-bottom: 20px;
-}
-
-p {
-  margin: 10px 0;
-  font-size: 16px;
-}
-</style>

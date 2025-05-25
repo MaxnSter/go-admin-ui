@@ -42,3 +42,43 @@ $sideBarWidth: 210px;
   sidebarTitle: $sidebarTitle;
   sidebarLightTitle: $sidebarLightTitle
 }
+
+// 主题颜色
+$primary-color: #409eff;
+$success-color: #67c23a;
+$warning-color: #e6a23c;
+$danger-color: #f56c6c;
+$info-color: #909399;
+
+// 文本颜色
+$text-primary: #303133;
+$text-regular: #606266;
+$text-secondary: #909399;
+$text-placeholder: #c0c4cc;
+
+// 边框颜色
+$border-base: #dcdfe6;
+$border-light: #e4e7ed;
+$border-lighter: #ebeef5;
+$border-extra-light: #f2f6fc;
+
+// 背景颜色
+$background-base: #f5f7fa;
+$background-light: #fafafa;
+
+// 布局相关
+$sidebar-width: 210px;
+$navbar-height: 50px;
+$tagsview-height: 34px;
+
+// 动画时间
+$transition-time: 0.28s;
+
+// 阴影
+$box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+$box-shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
+$box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
+// 圆角
+$border-radius-base: 4px;
+$border-radius-small: 2px;

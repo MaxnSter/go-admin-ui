@@ -46,24 +46,28 @@
   </div>
 </template>
 
-<script>import { Delete } from '@element-plus/icons-vue'
+<script>
+import { ref, computed } from 'vue'
+import { Delete } from '@element-plus/icons-vue'
+import { useErrorLogStore } from '@/stores/modules/errorLog'
 
 export default {
   name: 'ErrorLog',
-  data() {
+  setup() {
+    const errorLogStore = useErrorLogStore()
+    const dialogTableVisible = ref(false)
+
+    const errorLogs = computed(() => errorLogStore.logs)
+
+    const clearAll = () => {
+      dialogTableVisible.value = false
+      errorLogStore.clearErrorLog()
+    }
+
     return {
-      dialogTableVisible: false
-    }
-  },
-  computed: {
-    errorLogs() {
-      return this.$store.getters.errorLogs
-    }
-  },
-  methods: {
-    clearAll() {
-      this.dialogTableVisible = false
-      this.$store.dispatch('errorLog/clearErrorLog')
+      dialogTableVisible,
+      errorLogs,
+      clearAll
     }
   }
 }

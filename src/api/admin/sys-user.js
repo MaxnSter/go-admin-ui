@@ -12,7 +12,7 @@ export function listUser(query) {
 // 查询用户详细
 export function getUser(userId) {
   return request({
-    url: '/api/v1/sys-user/' + userId,
+    url: `/api/v1/sys-user/${  userId}`,
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function addUser(data) {
   return request({
     url: '/api/v1/sys-user',
     method: 'post',
-    data: data
+    data
   })
 }
 
@@ -38,7 +38,7 @@ export function updateUser(data) {
   return request({
     url: '/api/v1/sys-user',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -47,7 +47,7 @@ export function delUser(data) {
   return request({
     url: '/api/v1/sys-user',
     method: 'delete',
-    data: data
+    data
   })
 }
 
@@ -69,7 +69,7 @@ export function resetUserPwd(userId, password) {
   return request({
     url: '/api/v1/user/pwd/reset',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -82,7 +82,7 @@ export function changeUserStatus(e) {
   return request({
     url: '/api/v1/user/status',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -91,7 +91,7 @@ export function updateUserProfile(data) {
   return request({
     url: '/api/v1/sys-user/profile',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -112,7 +112,7 @@ export function updateUserPwd(oldPassword, newPassword) {
   return request({
     url: '/api/v1/user/pwd/set',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -121,7 +121,7 @@ export function uploadAvatar(data) {
   return request({
     url: '/api/v1/user/avatar',
     method: 'post',
-    data: data
+    data
   })
 }
 

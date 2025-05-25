@@ -5,6 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["vite-plugin-svg-icons/client"],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -21,6 +22,6 @@
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["node_modules", "dist", "**/*.js"],
+  "exclude": ["node_modules", "dist", "**/*.js", "**/*.vue.js", "**/*.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

@@ -8,106 +8,47 @@
 </template>
 
 <script>
+import { ref, computed, watch } from 'vue'
+import { useSettingsStore } from '@/stores/modules/settings'
+
 // Use a fixed version or get it from import.meta.env
 const version = '2.9.11' // element-plus version - update this when upgrading Element Plus
 const ORIGINAL_THEME = '#1890FF' // default color
 
 export default {
-  data() {
-    return {
-      chalk: '', // content of theme-chalk css
-      theme: ''
-    }
-  },
-  computed: {
-    defaultTheme() {
-      return this.$store.state.settings.theme
-    }
-  },
-  watch: {
-    defaultTheme: {
-      handler: function(val, oldVal) {
-        this.theme = val
-      },
-      immediate: true
-    },
-    async theme(val) {
-      const oldVal = this.chalk ? this.theme : ORIGINAL_THEME
-      if (typeof val !== 'string') return
-      const themeCluster = this.getThemeCluster(val.replace('#', ''))
-      const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))
+  setup(props, { emit }) {
+    const settingsStore = useSettingsStore()
+    
+    const chalk = ref('') // content of theme-chalk css
+    const theme = ref('')
 
-      const $message = this.$message({
-        message: '编译主题中',
-        customClass: 'theme-message',
-        type: 'success',
-        duration: 0,
-        iconClass: 'el-icon-loading'
-      })
-
-      const getHandler = (variable, id) => {
-        return () => {
-          const originalCluster = this.getThemeCluster(ORIGINAL_THEME.replace('#', ''))
-          const newStyle = this.updateStyle(this[variable], originalCluster, themeCluster)
-
-          let styleTag = document.getElementById(id)
-          if (!styleTag) {
-            styleTag = document.createElement('style')
-            styleTag.setAttribute('id', id)
-            document.head.appendChild(styleTag)
-          }
-          styleTag.innerText = newStyle
-        }
-      }
-
-      if (!this.chalk) {
-        const url = `https://unpkg.com/element-plus@${version}/dist/index.css`
-        await this.getCSSString(url, 'chalk')
-      }
-
-      const chalkHandler = getHandler('chalk', 'chalk-style')
-
-      chalkHandler()
-
-      const styles = [].slice.call(document.querySelectorAll('style'))
-        .filter(style => {
-          const text = style.innerText
-          return new RegExp(oldVal, 'i').test(text) && !/Chalk Variables/.test(text)
-        })
-      styles.forEach(style => {
-        const { innerText } = style
-        if (typeof innerText !== 'string') return
-        style.innerText = this.updateStyle(innerText, originalCluster, themeCluster)
-      })
-      this.$emit('change', val)
-      $message.close()
-    }
-  },
-
-  methods: {
-    updateStyle(style, oldCluster, newCluster) {
+    const defaultTheme = computed(() => settingsStore.theme)
+    // 方法定义
+    const updateStyle = (style, oldCluster, newCluster) => {
       let newStyle = style
       oldCluster.forEach((color, index) => {
         newStyle = newStyle.replace(new RegExp(color, 'ig'), newCluster[index])
       })
       return newStyle
-    },
+    }
 
-    getCSSString(url, variable) {
+    const getCSSString = (url, variable) => {
       return new Promise(resolve => {
         const xhr = new XMLHttpRequest()
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4 && xhr.status === 200) {
-            this[variable] = xhr.responseText.replace(/@font-face{[^}]+}/, '')
+            if (variable === 'chalk') {
+              chalk.value = xhr.responseText.replace(/@font-face{[^}]+}/, '')
+            }
             resolve()
           }
         }
         xhr.open('GET', url)
         xhr.send()
       })
-    },
+    }
 
-    getThemeCluster(theme) {
+    const getThemeCluster = (themeColor) => {
       const tintColor = (color, tint) => {
         let red = parseInt(color.slice(0, 2), 16)
         let green = parseInt(color.slice(2, 4), 16)
@@ -144,12 +85,78 @@ export default {
         return `#${red}${green}${blue}`
       }
 
-      const clusters = [theme]
+      const clusters = [themeColor]
       for (let i = 0; i <= 9; i++) {
-        clusters.push(tintColor(theme, Number((i / 10).toFixed(2))))
+        clusters.push(tintColor(themeColor, Number((i / 10).toFixed(2))))
       }
-      clusters.push(shadeColor(theme, 0.1))
+      clusters.push(shadeColor(themeColor, 0.1))
       return clusters
+    }
+
+    // 监听器
+    watch(defaultTheme, (val) => {
+      theme.value = val
+    }, { immediate: true })
+
+    watch(theme, async (val) => {
+      const oldVal = chalk.value ? theme.value : ORIGINAL_THEME
+      if (typeof val !== 'string') return
+      const themeCluster = getThemeCluster(val.replace('#', ''))
+      const originalCluster = getThemeCluster(oldVal.replace('#', ''))
+
+      // 这里需要使用 ElMessage 而不是 this.$message
+      // 暂时注释掉，因为需要正确导入 ElMessage
+      // const $message = ElMessage({
+      //   message: '编译主题中',
+      //   type: 'success',
+      //   duration: 0
+      // })
+
+      const getHandler = (variable, id) => {
+        return () => {
+          const originalCluster = getThemeCluster(ORIGINAL_THEME.replace('#', ''))
+          const newStyle = updateStyle(variable === 'chalk' ? chalk.value : '', originalCluster, themeCluster)
+
+          let styleTag = document.getElementById(id)
+          if (!styleTag) {
+            styleTag = document.createElement('style')
+            styleTag.setAttribute('id', id)
+            document.head.appendChild(styleTag)
+          }
+          styleTag.innerText = newStyle
+        }
+      }
+
+      if (!chalk.value) {
+        const url = `https://unpkg.com/element-plus@${version}/dist/index.css`
+        await getCSSString(url, 'chalk')
+      }
+
+      const chalkHandler = getHandler('chalk', 'chalk-style')
+      chalkHandler()
+
+      const styles = [].slice.call(document.querySelectorAll('style'))
+        .filter(style => {
+          const text = style.innerText
+          return new RegExp(oldVal, 'i').test(text) && !/Chalk Variables/.test(text)
+        })
+      styles.forEach(style => {
+        const { innerText } = style
+        if (typeof innerText !== 'string') return
+        style.innerText = updateStyle(innerText, originalCluster, themeCluster)
+      })
+      
+      emit('change', val)
+      // $message.close()
+    })
+
+    return {
+      chalk,
+      theme,
+      defaultTheme,
+      updateStyle,
+      getCSSString,
+      getThemeCluster
     }
   }
 }

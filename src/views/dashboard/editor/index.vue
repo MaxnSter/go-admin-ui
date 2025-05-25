@@ -20,8 +20,8 @@
 <script>
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/modules/user'
-import PanThumb from '@/components/PanThumb'
-import GithubCorner from '@/components/GithubCorner'
+import PanThumb from '@/components/PanThumb/index.vue'
+import GithubCorner from '@/components/GithubCorner/index.vue'
 
 export default {
   name: 'DashboardEditor',
