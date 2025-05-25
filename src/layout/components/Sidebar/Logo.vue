@@ -2,19 +2,20 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: $store.state.settings.themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="appInfo.sys_app_logo" :src="appInfo.sys_app_logo" class="sidebar-logo">
-        <h1 v-else class="sidebar-title" :style="{ color: $store.state.settings.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo.sys_app_name }} </h1>
+        <img v-if="appInfo && appInfo.sys_app_logo" :src="appInfo.sys_app_logo" class="sidebar-logo">
+        <h1 v-else class="sidebar-title" :style="{ color: $store.state.settings.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo?.sys_app_name || 'Admin' }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="appInfo.sys_app_logo" :src="appInfo.sys_app_logo" class="sidebar-logo">
-        <h1 class="sidebar-title" :style="{ color: $store.state.settings.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo.sys_app_name }} </h1>
+        <img v-if="appInfo && appInfo.sys_app_logo" :src="appInfo.sys_app_logo" class="sidebar-logo">
+        <h1 class="sidebar-title" :style="{ color: $store.state.settings.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo?.sys_app_name || 'Admin' }} </h1>
       </router-link>
     </transition>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSystemStore } from '@/stores/modules/system'
+import { computed } from 'vue'
 
 export default {
   name: 'SidebarLogo',
@@ -24,17 +25,21 @@ export default {
       required: true
     }
   },
-  computed: {
-    ...mapGetters([
-      'appInfo'
-    ]),
-    variables() {
-      return {
-        menuBg: '#001529',
-        menuLightBg: '#fff',
-        sidebarTitle: '#fff',
-        sidebarLightTitle: '#000'
-      }
+  setup() {
+    const systemStore = useSystemStore()
+    
+    const appInfo = computed(() => systemStore.info || {})
+    
+    const variables = computed(() => ({
+      menuBg: '#001529',
+      menuLightBg: '#fff',
+      sidebarTitle: '#fff',
+      sidebarLightTitle: '#000'
+    }))
+    
+    return {
+      appInfo,
+      variables
     }
   }
 }

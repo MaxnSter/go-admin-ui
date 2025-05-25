@@ -12,7 +12,7 @@ export function parseTime(time, cFormat) {
   if (arguments.length === 0) {
     return null
   }
-  if (time_str.indexOf('01-01-01') > -1) {
+  if (time && time.toString().indexOf('01-01-01') > -1) {
     return '-'
   }
   const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
@@ -146,7 +146,7 @@ export function cleanArray(actual) {
 export function param(json) {
   if (!json) return ''
   return cleanArray(
-    Object.keys(json).map(key => {
+    Object.keys(json || {}).map(key => {
       if (json[key] === undefined) return ''
       return encodeURIComponent(key) + '=' + encodeURIComponent(json[key])
     })
@@ -196,7 +196,7 @@ export function objectMerge(target, source) {
   if (Array.isArray(source)) {
     return source.slice()
   }
-  Object.keys(source).forEach(property => {
+  Object.keys(source || {}).forEach(property => {
     const sourceProperty = source[property]
     if (typeof sourceProperty === 'object') {
       target[property] = objectMerge(target[property], sourceProperty)
@@ -292,7 +292,7 @@ export function deepClone(source) {
     throw new Error('error arguments', 'deepClone')
   }
   const targetObj = source.constructor === Array ? [] : {}
-  Object.keys(source).forEach(keys => {
+  Object.keys(source || {}).forEach(keys => {
     if (source[keys] && typeof source[keys] === 'object') {
       targetObj[keys] = deepClone(source[keys])
     } else {

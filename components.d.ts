@@ -41,6 +41,7 @@ declare module 'vue' {
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     ErrorLog: typeof import('./src/components/ErrorLog/index.vue')['default']
     Git: typeof import('./src/components/Go-Admin/Git/index.vue')['default']

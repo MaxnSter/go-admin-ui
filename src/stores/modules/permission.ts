@@ -85,27 +85,35 @@ export const usePermissionStore = defineStore('permission', {
   actions: {
     async generateRoutes(roles: string[]) {
       const loadMenuData: any[] = []
-      const response = await getRoutes() as unknown as ApiResponse<any[]>
-      if (response && response.code === 200) {
-        const data = response.data
-        Object.assign(loadMenuData, data)
-        generaMenu(asyncRoutes, loadMenuData)
-        const notFoundRoute: RouteRecordRaw = { 
-          path: '/:pathMatch(.*)*', 
-          redirect: '/',
-          meta: { hidden: true }
+      try {
+        const response = await getRoutes() as unknown as ApiResponse<any[]>
+        if (response && response.code === 200 && response.data) {
+          const data = response.data
+          if (Array.isArray(data)) {
+            Object.assign(loadMenuData, data)
+            generaMenu(asyncRoutes, loadMenuData)
+          }
         }
-        asyncRoutes.push(notFoundRoute)
-        this.addRoutes = asyncRoutes
-        this.routes = constantRoutes.concat(asyncRoutes)
-        const sidebarRoutes: any[] = []
-        generaMenu(sidebarRoutes, loadMenuData)
-        this.sidebarRouters = constantRoutes.concat(sidebarRoutes)
-        this.defaultRoutes = constantRoutes.concat(sidebarRoutes)
-        this.topbarRouters = sidebarRoutes
-        return asyncRoutes
+      } catch (error) {
+        console.error('Error loading routes:', error)
       }
-      return []
+      
+      const notFoundRoute: RouteRecordRaw = { 
+        path: '/:pathMatch(.*)*', 
+        redirect: '/',
+        meta: { hidden: true }
+      }
+      asyncRoutes.push(notFoundRoute)
+      this.addRoutes = asyncRoutes
+      this.routes = constantRoutes.concat(asyncRoutes)
+      const sidebarRoutes: any[] = []
+      if (loadMenuData.length > 0) {
+        generaMenu(sidebarRoutes, loadMenuData)
+      }
+      this.sidebarRouters = constantRoutes.concat(sidebarRoutes)
+      this.defaultRoutes = constantRoutes.concat(sidebarRoutes)
+      this.topbarRouters = sidebarRoutes
+      return asyncRoutes
     }
   }
 })

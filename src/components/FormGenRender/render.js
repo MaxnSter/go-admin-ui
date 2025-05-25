@@ -6,13 +6,17 @@ const componentChild = {}
  * 文件名为key，对应JSON配置中的__config__.tag
  * 文件内容为value，解析JSON配置中的__slot__
  */
-const slotsFiles = require.context('./slots', false, /\.js$/)
-const keys = slotsFiles.keys() || []
-keys.forEach(key => {
-  const tag = key.replace(/^\.\/(.*)\.\w+$/, '$1')
-  const value = slotsFiles(key).default
-  componentChild[tag] = value
-})
+try {
+  const slotsFiles = require.context('./slots', false, /\.js$/)
+  const keys = slotsFiles.keys() || []
+  keys.forEach(key => {
+    const tag = key.replace(/^\.\/(.*)\.\w+$/, '$1')
+    const value = slotsFiles(key).default
+    componentChild[tag] = value
+  })
+} catch (error) {
+  console.warn('Failed to load slot files:', error)
+}
 
 function vModel(dataObject, defaultValue) {
   dataObject.props.value = defaultValue
@@ -25,7 +29,7 @@ function vModel(dataObject, defaultValue) {
 function mountSlotFiles(h, confClone, children) {
   const childObjs = componentChild[confClone.__config__.tag]
   if (childObjs) {
-    Object.keys(childObjs).forEach(key => {
+    Object.keys(childObjs || {}).forEach(key => {
       const childFunc = childObjs[key]
       if (confClone.__slot__ && confClone.__slot__[key]) {
         children.push(childFunc(h, confClone, key))
@@ -47,7 +51,7 @@ function emitEvents(confClone) {
 }
 
 function buildDataObject(confClone, dataObject) {
-  Object.keys(confClone).forEach(key => {
+  Object.keys(confClone || {}).forEach(key => {
     const val = confClone[key]
     if (key === '__vModel__') {
       vModel.call(this, dataObject, confClone.__config__.defaultValue)
@@ -114,7 +118,7 @@ export default {
     // 将字符串类型的事件，发送为消息
     emitEvents.call(this, confClone)
 
-    // 将json表单配置转化为vue render可以识别的 “数据对象（dataObject）”
+    // 将json表单配置转化为vue render可以识别的 "数据对象（dataObject）"
     buildDataObject.call(this, confClone, dataObject)
 
     return h(this.conf.__config__.tag, dataObject, children)

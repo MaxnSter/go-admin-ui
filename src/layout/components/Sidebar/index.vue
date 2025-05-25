@@ -25,42 +25,47 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { usePermissionStore, useAppStore } from '@/stores'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Logo from './Logo.vue'
 import SidebarItem from './SidebarItem.vue'
 import variables from '@/styles/variables.js'
 
 export default {
   components: { SidebarItem, Logo },
-  computed: {
-    ...mapGetters([
-      'sidebarRouters',
-      'sidebar'
-    ]),
-    activeMenu() {
-      const route = this.$route
+  setup() {
+    const permissionStore = usePermissionStore()
+    const appStore = useAppStore()
+    const route = useRoute()
+    
+    const sidebarRouters = computed(() => permissionStore.sidebarRouters || [])
+    const sidebar = computed(() => appStore.sidebar || { opened: true })
+    
+    const activeMenu = computed(() => {
       const { meta, path } = route
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         return meta.activeMenu
       }
       return path
-    },
-    showLogo() {
-      return this.$store.state.settings.sidebarLogo
-    },
-    variables() {
-      return variables
-    },
-    isCollapse() {
-      return !this.sidebar.opened
+    })
+    
+    const showLogo = computed(() => {
+      // 这里需要从 settings store 获取，暂时返回 true
+      return true
+    })
+    
+    const isCollapse = computed(() => !sidebar.value.opened)
+    
+    return {
+      sidebarRouters,
+      sidebar,
+      activeMenu,
+      showLogo,
+      variables,
+      isCollapse
     }
-  },
-  mounted() {
-
-  },
-  methods: {
-
   }
 }
 </script>

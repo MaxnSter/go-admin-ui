@@ -195,7 +195,6 @@ import { downLoadFile } from '@/utils/zipdownload'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/theme/material-palenight.css'
 
-require('codemirror/mode/javascript/javascript')
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/go/go'
 import 'codemirror/mode/vue/vue'
