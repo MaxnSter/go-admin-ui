@@ -1,31 +1,28 @@
 <template>
-  <div class="dashboard-container">
-    <component :is="currentRole" />
+  <div class="dashboard">
+    <h1>Go Admin Dashboard</h1>
+    <p>Vue 3 + Vite + TypeScript + Vue Router 4 + Pinia</p>
+    <p>任务1：核心框架迁移完成 ✅</p>
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import adminDashboard from './admin'
-import editorDashboard from './editor'
-
-export default {
-  name: 'Dashboard',
-  components: { adminDashboard, editorDashboard },
-  data() {
-    return {
-      currentRole: 'adminDashboard'
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'roles'
-    ])
-  },
-  created() {
-    // if (!this.roles.includes('admin')) {
-    //   this.currentRole = 'editorDashboard'
-    // }
-  }
-}
+<script setup lang="ts">
+// 简单的测试页面
 </script>
+
+<style scoped>
+.dashboard {
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #409eff;
+  margin-bottom: 20px;
+}
+
+p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+</style>
