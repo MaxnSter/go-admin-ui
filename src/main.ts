@@ -17,6 +17,8 @@ import './icons'
 
 // 权限控制
 import './permission'
+import PermissionDirective from '@/directive/permission'
+import * as filters from '@/filters'
 
 // 错误日志
 import './utils/error-log'
@@ -31,10 +33,16 @@ const app = createApp(App)
 // 使用插件
 app.use(createPinia())
 app.use(router)
+app.use(PermissionDirective)
 
 // 注册全局组件
 app.component('Pagination', Pagination)
 app.component('BasicLayout', BasicLayout)
+
+Object.keys(filters).forEach((key) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app.config.globalProperties[`$${key}`] = (filters as any)[key]
+})
 
 // 全局属性（替代 Vue.prototype）
 app.config.globalProperties.msgSuccess = function(msg: string) {
