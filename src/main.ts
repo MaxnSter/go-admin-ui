@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { createPinia } from 'pinia'
+import { setupStore } from './stores'
 
 // 样式导入
 import 'normalize.css/normalize.css'
@@ -29,7 +29,7 @@ import BasicLayout from '@/layout/BasicLayout.vue'
 const app = createApp(App)
 
 // 使用插件
-app.use(createPinia())
+setupStore(app)
 app.use(router)
 
 // 注册全局组件
