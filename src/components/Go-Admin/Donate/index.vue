@@ -4,18 +4,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'GoAdminDonate',
-  data() {
-    return {
-      url: 'http://doc.zhangwj.com/go-admin-site/donate/'
-    }
-  },
-  methods: {
-    goto() {
-      window.open(this.url)
-    }
-  }
+<script setup lang="ts">
+defineOptions({ name: 'GoAdminDonate' })
+const url = 'http://doc.zhangwj.com/go-admin-site/donate/'
+const goto = () => {
+  window.open(url)
 }
 </script>
