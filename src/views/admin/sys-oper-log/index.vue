@@ -138,7 +138,7 @@
         />
 
         <!-- 操作日志详细 -->
-        <el-dialog title="操作日志详细" v-model:visible="open" width="700px" :close-on-click-modal="false">
+        <el-dialog title="操作日志详细" v-model="open" width="700px" :close-on-click-modal="false">
           <el-form ref="form" :model="form" label-width="100px" size="small">
             <el-row>
               <el-col :span="24">

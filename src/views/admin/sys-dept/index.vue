@@ -93,7 +93,7 @@
         </el-table>
 
         <!-- 添加或修改部门对话框 -->
-        <el-dialog :title="title" v-model:visible="open" width="600px" :close-on-click-modal="false">
+        <el-dialog :title="title" v-model="open" width="600px" :close-on-click-modal="false">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             <el-row>
               <el-col :span="24">

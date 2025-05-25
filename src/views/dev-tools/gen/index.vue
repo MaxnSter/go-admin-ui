@@ -155,7 +155,7 @@
 
       <!-- 预览界面 -->
 
-      <el-dialog class="preview" :title="preview.title" v-model:visible="preview.open" :close-on-click-modal="false" fullscreen>
+              <el-dialog class="preview" :title="preview.title" v-model="preview.open" :close-on-click-modal="false" fullscreen>
         <div class="el-dialog-container">
           <div class="tag-group">
             <!-- eslint-disable-next-line vue/valid-v-for -->

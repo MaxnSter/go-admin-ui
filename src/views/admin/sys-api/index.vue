@@ -158,7 +158,7 @@
           ref="drawer"
           :title="title"
           :before-close="cancel"
-          v-model:visible="open"
+          v-model="open"
           direction="rtl"
           custom-class="demo-drawer"
         >

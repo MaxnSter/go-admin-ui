@@ -6,7 +6,7 @@
       </el-button>
     </el-badge>
 
-    <el-dialog v-model:visible="dialogTableVisible" width="80%" append-to-body>
+    <el-dialog v-model="dialogTableVisible" width="80%" append-to-body>
       <div slot="title">
         <span style="padding-right: 10px;">Error Log</span>
         <el-button size="small" type="primary" :icon="Delete" @click="clearAll">Clear All</el-button>

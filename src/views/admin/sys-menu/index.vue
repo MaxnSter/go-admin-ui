@@ -145,13 +145,13 @@
           ref="drawer"
           :title="title"
           :before-close="cancel"
-          v-model:visible="open"
+          v-model="open"
           direction="rtl"
           custom-class="demo-drawer"
           size="830px"
         >
           <div class="demo-drawer__content">
-            <el-form ref="form" :model="form" :rules="rules" label-position="top" label-width="106px">
+            <el-form ref="formRef" :model="form" :rules="rules" label-position="top" label-width="106px">
               <el-row>
                 <el-col :span="24">
                   <el-form-item prop="parentId">
@@ -270,7 +270,7 @@
                 </el-col>
 
                 <el-col :span="12">
-                  <el-form-item v-if="form.menuType != 'F'" prop="path">
+                  <el-form-item v-if="form.menuType != 'F'">
                     <span slot="label">
                       路由地址
                       <el-tooltip content="访问此页面自定义的url地址，建议/开头书写，例如 /app-name/menu-name" placement="top">
@@ -353,257 +353,244 @@
   </BasicLayout>
 </template>
 
-<script>import { Search, Plus, Edit, Delete, QuestionFilled } from '@element-plus/icons-vue'
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Search, Plus, Edit, Delete, QuestionFilled } from '@element-plus/icons-vue'
 
 import { listMenu, getMenu, delMenu, addMenu, updateMenu } from '@/api/admin/sys-menu'
 import { listSysApi } from '@/api/admin/sys-api'
+import { getDicts, selectDictLabel } from '@/utils/dict'
 
 import Treeselect from '@zanmato/vue3-treeselect'
 import '@zanmato/vue3-treeselect/dist/vue3-treeselect.min.css'
 import IconSelect from '@/components/IconSelect'
 
-export default {
-  name: 'SysMenuManage',
-  components: { Treeselect, IconSelect },
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 菜单表格树数据
-      menuList: [],
-      sysapiList: [],
-      // 菜单树选项
-      menuOptions: [],
-      // 弹出层标题
-      title: '',
-      // 是否显示弹出层
-      open: false,
-      // 菜单状态数据字典
-      visibleOptions: [],
-      // 查询参数
-      queryParams: {
-        title: undefined,
-        visible: undefined
-      },
-      // 表单参数
-      form: {
-        apis: [],
-        sysApi: []
-      },
-      // 表单校验
-      rules: {
-        title: [{ required: true, message: '菜单标题不能为空', trigger: 'blur' }],
-        sort: [{ required: true, message: '菜单顺序不能为空', trigger: 'blur' }]
-      }
-    }
-  },
-  created() {
-    this.getList()
+// 组件引用
+const queryFormRef = ref()
+const formRef = ref()
 
-    this.getApiList()
-    this.getDicts('sys_show_hide').then(response => {
-      this.visibleOptions = response.data
-    })
-  },
-  methods: {
-    handleChange(value, direction, movedKeys) {
-      console.log(value, direction, movedKeys)
-      const list = this.form.sysApi
-      this.form.apis = value
-      if (direction === 'right') {
-        for (let x = 0; x < movedKeys.length; x++) {
-          for (let index = 0; index < this.sysapiList.length; index++) {
-            const element = this.sysapiList[index]
-            if (element.id === movedKeys[x]) {
-              list.push(element)
-              break
-            }
-          }
+// 响应式数据
+const loading = ref(true)
+const menuList = ref([])
+const sysapiList = ref([])
+const menuOptions = ref([])
+const title = ref('')
+const open = ref(false)
+const visibleOptions = ref([])
+
+// 查询参数
+const queryParams = reactive({
+  title: undefined,
+  visible: undefined
+})
+
+// 表单参数
+const form = reactive({
+  menuId: undefined,
+  parentId: 0,
+  menuName: undefined,
+  icon: undefined,
+  menuType: 'M',
+  apis: [],
+  sort: 0,
+  action: '',
+  isFrame: '1',
+  visible: '0',
+  sysApi: []
+})
+
+// 表单校验规则
+const rules = {
+  title: [{ required: true, message: '菜单标题不能为空', trigger: 'blur' }],
+  sort: [{ required: true, message: '菜单顺序不能为空', trigger: 'blur' }]
+}
+
+// 处理穿梭框变化
+const handleChange = (value, direction, movedKeys) => {
+  console.log(value, direction, movedKeys)
+  const list = form.sysApi
+  form.apis = value
+  if (direction === 'right') {
+    for (let x = 0; x < movedKeys.length; x++) {
+      for (let index = 0; index < sysapiList.value.length; index++) {
+        const element = sysapiList.value[index]
+        if (element.id === movedKeys[x]) {
+          list.push(element)
+          break
         }
-        this.form.sysApi = list
-      } else if (direction === 'left') {
-        const l = []
-        for (let index = 0; index < movedKeys.length; index++) {
-          const element = movedKeys[index]
-          for (let x = 0; x < list.length; x++) {
-            const e = list[x]
-            if (element !== e.id) {
-              l.push()
-              break
-            }
-          }
-        }
-        this.form.sysApi = l
       }
-      // this.setApis(this.form.SysApi)
-      console.log(this.form.sysApi)
-    },
-    getApiList() {
-      this.loading = true
-      listSysApi({ 'pageSize': 10000, 'type': 'BUS' }).then(response => {
-        this.sysapiList = response.data.list
-        this.loading = false
-      }
-      )
-    },
-    handleClose(done) {
-      // if (this.loading) {
-      //   return
-      // }
-      // this.$confirm('需要提交表单吗？')
-      //   .then(_ => {
-      //     this.loading = true
-      //     this.timer = setTimeout(() => {
-      //       done()
-      //       // 动画关闭需要一定的时间
-      //       setTimeout(() => {
-      //         this.loading = false
-      //       }, 400)
-      //     }, 1000)
-      //   })
-      //   .catch(_ => {})
-    },
-    // 选择图标
-    selected(name) {
-      this.form.icon = name
-    },
-    /** 查询菜单列表 */
-    getList() {
-      this.loading = true
-      listMenu(this.queryParams).then(response => {
-        this.menuList = response.data
-        this.loading = false
-      })
-    },
-    /** 转换菜单数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children
-      }
-      return {
-        id: node.menuId,
-        label: node.title,
-        children: node.children
-      }
-    },
-    /** 查询菜单下拉树结构 */
-    getTreeselect() {
-      listMenu().then(response => {
-        this.menuOptions = []
-        const menu = { menuId: 0, title: '主类目', children: [] }
-        menu.children = response.data
-        this.menuOptions.push(menu)
-      })
-    },
-    // 菜单显示状态字典翻译
-    visibleFormat(row) {
-      if (row.menuType === 'F') {
-        return '-- --'
-      }
-      return this.selectDictLabel(this.visibleOptions, row.visible)
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false
-      this.reset()
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        menuId: undefined,
-        parentId: 0,
-        menuName: undefined,
-        icon: undefined,
-        menuType: 'M',
-        apis: [],
-        sort: 0,
-        action: this.form.menuType === 'A' ? this.form.action : '',
-        isFrame: '1',
-        visible: '0'
-      }
-      this.resetForm('form')
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.getList()
-    },
-    /** 新增按钮操作 */
-    handleAdd(row) {
-      this.reset()
-      this.getTreeselect()
-      if (row != null) {
-        this.form.parentId = row.menuId
-      }
-      this.open = true
-      this.title = '添加菜单'
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset()
-      this.getTreeselect()
-      getMenu(row.menuId).then(response => {
-        this.form = response.data
-        this.open = true
-        this.title = '修改菜单'
-      })
-    },
-    setApis(apiArray) {
-      var l = []
-      for (var index = 0; index < apiArray.length; index++) {
-        const element = apiArray[index]
-        l.push(element.id)
-      }
-      this.form.apis = l
-    },
-    /** 提交按钮 */
-    submitForm: function() {
-      this.$refs['form'].validate(valid => {
-        if (valid) {
-          if (this.form.menuId !== undefined) {
-            updateMenu(this.form, this.form.menuId).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess(response.msg)
-                this.open = false
-                this.getList()
-              } else {
-                this.msgError(response.msg)
-              }
-            })
-          } else {
-            addMenu(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess(response.msg)
-                this.open = false
-                this.getList()
-              } else {
-                this.msgError(response.msg)
-              }
-            })
-          }
-        }
-      })
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      this.$confirm('是否确认删除名称为"' + row.title + '"的数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(function() {
-        var Ids = (row.menuId && [row.menuId]) || this.ids
-        return delMenu({ 'ids': Ids })
-      }).then((response) => {
-        if (response.code === 200) {
-          this.msgSuccess(response.msg)
-          this.open = false
-          this.getList()
-        } else {
-          this.msgError(response.msg)
-        }
-      }).catch(function() {})
     }
+    form.sysApi = list
+  } else if (direction === 'left') {
+    const l = []
+    for (let index = 0; index < movedKeys.length; index++) {
+      const element = movedKeys[index]
+      for (let x = 0; x < list.length; x++) {
+        const e = list[x]
+        if (element !== e.id) {
+          l.push()
+          break
+        }
+      }
+    }
+    form.sysApi = l
+  }
+  console.log(form.sysApi)
+}
+
+// 获取API列表
+const getApiList = () => {
+  loading.value = true
+  listSysApi({ 'pageSize': 10000, 'type': 'BUS' }).then(response => {
+    sysapiList.value = response.data.list
+    loading.value = false
+  })
+}
+
+// 处理抽屉关闭
+const handleClose = (done) => {
+  // 可以在这里添加关闭前的逻辑
+}
+
+// 选择图标
+const selected = (name) => {
+  form.icon = name
+}
+
+// 查询菜单列表
+const getList = () => {
+  loading.value = true
+  listMenu(queryParams).then(response => {
+    menuList.value = response.data
+    loading.value = false
+  })
+}
+
+// 转换菜单数据结构
+const normalizer = (node) => {
+  if (node.children && !node.children.length) {
+    delete node.children
+  }
+  return {
+    id: node.menuId,
+    label: node.title,
+    children: node.children
   }
 }
+
+// 查询菜单下拉树结构
+const getTreeselect = () => {
+  listMenu().then(response => {
+    menuOptions.value = []
+    const menu = { menuId: 0, title: '主类目', children: [] }
+    menu.children = response.data
+    menuOptions.value.push(menu)
+  })
+}
+
+// 菜单显示状态字典翻译
+const visibleFormat = (row) => {
+  if (row.menuType === 'F') {
+    return '-- --'
+  }
+  return selectDictLabel(visibleOptions.value, row.visible)
+}
+
+// 取消按钮
+const cancel = () => {
+  open.value = false
+  reset()
+}
+
+// 表单重置
+const reset = () => {
+  Object.assign(form, {
+    menuId: undefined,
+    parentId: 0,
+    menuName: undefined,
+    icon: undefined,
+    menuType: 'M',
+    apis: [],
+    sort: 0,
+    action: form.menuType === 'A' ? form.action : '',
+    isFrame: '1',
+    visible: '0',
+    sysApi: []
+  })
+  formRef.value?.resetFields()
+}
+
+// 搜索按钮操作
+const handleQuery = () => {
+  getList()
+}
+
+// 新增按钮操作
+const handleAdd = (row) => {
+  reset()
+  getTreeselect()
+  if (row != null) {
+    form.parentId = row.menuId
+  }
+  open.value = true
+  title.value = '添加菜单'
+}
+
+// 修改按钮操作
+const handleUpdate = (row) => {
+  reset()
+  getTreeselect()
+  getMenu(row.menuId).then(response => {
+    Object.assign(form, response.data)
+    open.value = true
+    title.value = '修改菜单'
+  })
+}
+
+// 提交按钮
+const submitForm = () => {
+  formRef.value?.validate((valid) => {
+    if (valid) {
+      if (form.menuId !== undefined) {
+        updateMenu(form).then(() => {
+          ElMessage.success('修改成功')
+          open.value = false
+          getList()
+        })
+      } else {
+        addMenu(form).then(() => {
+          ElMessage.success('新增成功')
+          open.value = false
+          getList()
+        })
+      }
+    }
+  })
+}
+
+// 删除按钮操作
+const handleDelete = (row) => {
+  ElMessageBox.confirm('是否确认删除名称为"' + row.title + '"的数据项?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    return delMenu(row.menuId)
+  }).then(() => {
+    getList()
+    ElMessage.success('删除成功')
+  })
+}
+
+// 组件挂载时执行
+onMounted(() => {
+  getList()
+  getApiList()
+  getDicts('sys_show_hide').then(response => {
+    visibleOptions.value = response.data
+  })
+})
 </script>
 <style lang="css">
 .panel .el-transfer__buttons{
