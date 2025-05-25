@@ -22,7 +22,7 @@ export function delSysOperlog(data) {
   return request({
     url: '/api/v1/sys-opera-log',
     method: 'delete',
-    data: data
+    data
   })
 }
 

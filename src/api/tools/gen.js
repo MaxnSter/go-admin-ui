@@ -20,14 +20,14 @@ export function listDbTable(query) {
 // 查询表详细信息
 export function getGenTable(tableId) {
   return request({
-    url: '/api/v1/sys/tables/info/' + tableId,
+    url: `/api/v1/sys/tables/info/${  tableId}`,
     method: 'get'
   })
 }
 
 export function getGenTableInfo(tablename) {
   return request({
-    url: '/api/v1/sys/tables?tableName=' + tablename,
+    url: `/api/v1/sys/tables?tableName=${  tablename}`,
     method: 'get'
   })
 }
@@ -37,7 +37,7 @@ export function updateGenTable(data) {
   return request({
     url: '/api/v1/sys/tables/info',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -52,14 +52,14 @@ export function importTable(data) {
 // 预览生成代码
 export function previewTable(tableId) {
   return request({
-    url: '/api/v1/gen/preview/' + tableId,
+    url: `/api/v1/gen/preview/${  tableId}`,
     method: 'get'
   })
 }
 // 删除表数据
 export function delTable(tableId) {
   return request({
-    url: '/api/v1/sys/tables/info/' + tableId,
+    url: `/api/v1/sys/tables/info/${  tableId}`,
     method: 'delete'
   })
 }
@@ -67,7 +67,7 @@ export function delTable(tableId) {
 // 生成代码到项目
 export function toProjectTable(tableId) {
   return request({
-    url: '/api/v1/gen/toproject/' + tableId,
+    url: `/api/v1/gen/toproject/${  tableId}`,
     method: 'get'
   })
 }
@@ -75,14 +75,14 @@ export function toProjectTable(tableId) {
 // 生成接口数据到迁移脚本
 export function apiToFile(tableId) {
   return request({
-    url: '/api/v1/gen/apitofile/' + tableId,
+    url: `/api/v1/gen/apitofile/${  tableId}`,
     method: 'get'
   })
 }
 
 export function toProjectTableCheckRole(tableId, ischeckrole) {
   return request({
-    url: '/api/v1/gen/toproject/' + tableId + '?ischeckrole=' + ischeckrole,
+    url: `/api/v1/gen/toproject/${  tableId  }?ischeckrole=${  ischeckrole}`,
     method: 'get'
   })
 }
@@ -90,7 +90,7 @@ export function toProjectTableCheckRole(tableId, ischeckrole) {
 // 生成菜单到数据库
 export function toDBTable(tableId) {
   return request({
-    url: '/api/v1/gen/todb/' + tableId,
+    url: `/api/v1/gen/todb/${  tableId}`,
     method: 'get'
   })
 }

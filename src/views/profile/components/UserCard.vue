@@ -1,8 +1,10 @@
 <template>
   <el-card style="margin-bottom:20px;">
-    <div slot="header" class="clearfix">
-      <span>About me</span>
-    </div>
+    <template #header>
+      <div class="clearfix">
+        <span>About me</span>
+      </div>
+    </template>
 
     <div class="user-profile">
       <div class="box-center">
@@ -13,7 +15,7 @@
       </div>
       <div class="box-center">
         <div class="user-name text-center">{{ user.name }}</div>
-        <div class="user-role text-center text-muted">{{ user.role | uppercaseFirst }}</div>
+        <div class="user-role text-center text-muted">{{ uppercaseFirstRole }}</div>
       </div>
     </div>
 
@@ -52,25 +54,29 @@
   </el-card>
 </template>
 
-<script>
-import PanThumb from '@/components/PanThumb'
+<script setup>
+import { computed } from 'vue'
+import PanThumb from '@/components/PanThumb/index.vue'
 
-export default {
-  components: { PanThumb },
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: '',
-          avatar: '',
-          roles: ''
-        }
+const props = defineProps({
+  user: {
+    type: Object,
+    default: () => {
+      return {
+        name: '',
+        email: '',
+        avatar: '',
+        roles: ''
       }
     }
   }
-}
+})
+
+// 替代过滤器的计算属性
+const uppercaseFirstRole = computed(() => {
+  if (!props.user.role) return ''
+  return props.user.role.charAt(0).toUpperCase() + props.user.role.slice(1)
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import store from '@/store'
+import { nextTick } from 'vue'
+import { useErrorLogStore } from '@/stores/modules/errorLog'
 import { isString, isArray } from '@/utils/validate'
 import settings from '@/settings'
 
@@ -8,7 +8,7 @@ import settings from '@/settings'
 const { errorLog: needErrorLog } = settings
 
 function checkNeed() {
-  const env = process.env.NODE_ENV
+  const env = import.meta.env.MODE
   if (isString(needErrorLog)) {
     return env === needErrorLog
   }
@@ -19,17 +19,30 @@ function checkNeed() {
 }
 
 if (checkNeed()) {
-  Vue.config.errorHandler = function(err, vm, info, a) {
-  // Don't ask me why I use Vue.nextTick, it just a hack.
-  // detail see https://forum.vuejs.org/t/dispatch-in-vue-config-errorhandler-has-some-problem/23500
-    Vue.nextTick(() => {
-      store.dispatch('errorLog/addErrorLog', {
-        err,
-        vm,
-        info,
+  const errorLogStore = useErrorLogStore()
+  
+  // Vue 3 全局错误处理
+  window.addEventListener('error', (event) => {
+    nextTick(() => {
+      errorLogStore.addErrorLog({
+        err: event.error,
+        vm: null,
+        info: event.message,
         url: window.location.href
       })
-      console.error(err, info)
+      console.error(event.error, event.message)
     })
-  }
+  })
+
+  window.addEventListener('unhandledrejection', (event) => {
+    nextTick(() => {
+      errorLogStore.addErrorLog({
+        err: event.reason,
+        vm: null,
+        info: 'Unhandled Promise Rejection',
+        url: window.location.href
+      })
+      console.error(event.reason, 'Unhandled Promise Rejection')
+    })
+  })
 }

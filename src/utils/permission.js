@@ -1,4 +1,4 @@
-import store from '@/store'
+import { useUserStore } from '@/stores/modules/user'
 
 /**
  * @param {Array} value
@@ -7,7 +7,8 @@ import store from '@/store'
  */
 export default function checkPermission(value) {
   if (value && value instanceof Array && value.length > 0) {
-    const roles = store.getters && store.getters.roles
+    const userStore = useUserStore()
+    const roles = userStore.roles
     const permissionRoles = value
 
     const hasPermission = roles.some(role => {
@@ -19,7 +20,7 @@ export default function checkPermission(value) {
     }
     return true
   } else {
-    console.error(`need roles! Like v-permission="['admin','editor']"`)
+    console.error('need roles! Like v-permission="[\'admin\',\'editor\']"')
     return false
   }
 }

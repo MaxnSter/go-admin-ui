@@ -31,8 +31,8 @@ function checkVue3Syntax() {
         issues.push(`${file}: 发现 'Vue.filter' 语法，应该迁移到全局属性或组合式函数`)
       }
       
-      // 检查过滤器语法（在模板中）
-      if (file.endsWith('.vue') && content.match(/\{\{[^}]*\|[^}]*\}\}/)) {
+      // 检查过滤器语法（在模板中）- 修复正则表达式避免误识别
+      if (file.endsWith('.vue') && content.match(/\{\{[^}]*\s\|\s[^}]*\}\}/)) {
         issues.push(`${file}: 发现过滤器语法，应该迁移到计算属性或方法`)
       }
       

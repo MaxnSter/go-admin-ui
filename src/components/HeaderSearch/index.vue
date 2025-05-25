@@ -21,64 +21,53 @@
 // fuse is a lightweight fuzzy-search module
 // make search results more in line with expectations
 import Fuse from 'fuse.js'
-import path from 'path'
+import path from '@/utils/path'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
+import { usePermissionStore } from '@/stores/modules/permission'
 
 export default {
   name: 'HeaderSearch',
-  data() {
-    return {
-      search: '',
-      options: [],
-      searchPool: [],
-      show: false,
-      fuse: undefined
-    }
-  },
-  computed: {
-    routes() {
-      return this.$store.getters.permission_routes
-    }
-  },
-  watch: {
-    routes() {
-      this.searchPool = this.generateRoutes(this.routes)
-    },
-    searchPool(list) {
-      this.initFuse(list)
-    },
-    show(value) {
-      if (value) {
-        document.body.addEventListener('click', this.close)
-      } else {
-        document.body.removeEventListener('click', this.close)
+  setup() {
+    const router = useRouter()
+    const permissionStore = usePermissionStore()
+    
+    // 响应式数据
+    const search = ref('')
+    const options = ref([])
+    const searchPool = ref([])
+    const show = ref(false)
+    const fuse = ref(undefined)
+    const headerSearchSelect = ref(null)
+
+    // 计算属性
+    const routes = computed(() => permissionStore.routes || [])
+
+    // 方法
+    const click = () => {
+      show.value = !show.value
+      if (show.value) {
+        headerSearchSelect.value && headerSearchSelect.value.focus()
       }
     }
-  },
-  mounted() {
-    this.searchPool = this.generateRoutes(this.routes)
-  },
-  methods: {
-    click() {
-      this.show = !this.show
-      if (this.show) {
-        this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus()
-      }
-    },
-    close() {
-      this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur()
-      this.options = []
-      this.show = false
-    },
-    change(val) {
-      this.$router.push(val.path)
-      this.search = ''
-      this.options = []
-      this.$nextTick(() => {
-        this.show = false
+
+    const close = () => {
+      headerSearchSelect.value && headerSearchSelect.value.blur()
+      options.value = []
+      show.value = false
+    }
+
+    const change = (val) => {
+      router.push(val.path)
+      search.value = ''
+      options.value = []
+      nextTick(() => {
+        show.value = false
       })
-    },
-    initFuse(list) {
-      this.fuse = new Fuse(list, {
+    }
+
+    const initFuse = (list) => {
+      fuse.value = new Fuse(list, {
         shouldSort: true,
         threshold: 0.4,
         location: 0,
@@ -93,10 +82,11 @@ export default {
           weight: 0.3
         }]
       })
-    },
+    }
+
     // Filter out the routes that can be displayed in the sidebar
     // And generate the internationalized title
-    generateRoutes(routes, basePath = '/', prefixTitle = []) {
+    const generateRoutes = (routes, basePath = '/', prefixTitle = []) => {
       let res = []
 
       for (const router of routes) {
@@ -120,20 +110,59 @@ export default {
 
         // recursive child routes
         if (router.children) {
-          const tempRoutes = this.generateRoutes(router.children, data.path, data.title)
+          const tempRoutes = generateRoutes(router.children, data.path, data.title)
           if (tempRoutes.length >= 1) {
             res = [...res, ...tempRoutes]
           }
         }
       }
       return res
-    },
-    querySearch(query) {
+    }
+
+    const querySearch = (query) => {
       if (query !== '') {
-        this.options = this.fuse.search(query)
+        options.value = fuse.value.search(query)
       } else {
-        this.options = []
+        options.value = []
       }
+    }
+
+    // 监听器
+    watch(routes, () => {
+      searchPool.value = generateRoutes(routes.value)
+    })
+
+    watch(searchPool, (list) => {
+      initFuse(list)
+    })
+
+    watch(show, (value) => {
+      if (value) {
+        document.body.addEventListener('click', close)
+      } else {
+        document.body.removeEventListener('click', close)
+      }
+    })
+
+    // 生命周期
+    onMounted(() => {
+      searchPool.value = generateRoutes(routes.value)
+    })
+
+    return {
+      search,
+      options,
+      searchPool,
+      show,
+      fuse,
+      headerSearchSelect,
+      routes,
+      click,
+      close,
+      change,
+      initFuse,
+      generateRoutes,
+      querySearch
     }
   }
 }
@@ -159,7 +188,7 @@ export default {
     display: inline-block;
     vertical-align: middle;
 
-    ::v-deep .el-input__inner {
+    :deep(.el-input__inner) {
       border-radius: 0;
       border: 0;
       padding-left: 0;

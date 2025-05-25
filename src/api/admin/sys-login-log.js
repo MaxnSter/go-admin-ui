@@ -12,7 +12,7 @@ export function listSysLoginlog(query) {
 // 查询SysLoginlog详细
 export function getSysLoginlog(ID) {
   return request({
-    url: '/api/v1/sys-login-log/' + ID,
+    url: `/api/v1/sys-login-log/${  ID}`,
     method: 'get'
   })
 }
@@ -22,7 +22,7 @@ export function delSysLoginlog(data) {
   return request({
     url: '/api/v1/sys-login-log',
     method: 'delete',
-    data: data
+    data
   })
 }
 

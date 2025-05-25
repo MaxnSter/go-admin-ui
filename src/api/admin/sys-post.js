@@ -12,7 +12,7 @@ export function listPost(query) {
 // 查询岗位详细
 export function getPost(postId) {
   return request({
-    url: '/api/v1/post/' + postId,
+    url: `/api/v1/post/${  postId}`,
     method: 'get'
   })
 }
@@ -22,16 +22,16 @@ export function addPost(data) {
   return request({
     url: '/api/v1/post',
     method: 'post',
-    data: data
+    data
   })
 }
 
 // 修改岗位
 export function updatePost(data, id) {
   return request({
-    url: '/api/v1/post/' + id,
+    url: `/api/v1/post/${  id}`,
     method: 'put',
-    data: data
+    data
   })
 }
 

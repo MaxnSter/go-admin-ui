@@ -13,7 +13,7 @@
                   <el-form-item label="系统logo" prop="sys_app_logo" required>
                     <img v-if="form.sys_app_logo" :src="form.sys_app_logo" class="el-upload el-upload--picture-card" style="float:left">
                     <el-upload ref="sys_app_logo" :headers="headers" :file-list="sys_app_logofileList" :action="sys_app_logoAction" style="float:left" :before-upload="sys_app_logoBeforeUpload" list-type="picture-card" :show-file-list="false" :on-success="uploadSuccess">
-                      <i class="el-icon-plus" />
+                      <el-icon><Plus /></el-icon>
                     </el-upload>
                   </el-form-item>
                   <el-form-item label="初始密码" prop="sys_user_initPassword">
@@ -45,7 +45,8 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Plus } from '@element-plus/icons-vue'
+
 import {
   getSetConfig,
   updateSetConfig
@@ -94,7 +95,7 @@ export default {
           trigger: 'change'
         }]
       },
-      sys_app_logoAction: process.env.VUE_APP_BASE_API + '/api/v1/public/uploadFile',
+              sys_app_logoAction: import.meta.env.VITE_APP_BASE_API + '/api/v1/public/uploadFile',
       sys_app_logofileList: [],
       sys_index_skinNameOptions: [{
         'label': '蓝色',
@@ -152,7 +153,7 @@ export default {
     },
     uploadSuccess(response, file, fileList) {
       console.log('sss')
-      this.form.sys_app_logo = process.env.VUE_APP_BASE_API + response.data.full_path
+                this.form.sys_app_logo = import.meta.env.VITE_APP_BASE_API + response.data.full_path
       console.log(response.data.full_path)
     },
     /** 查询参数列表 */

@@ -34,7 +34,7 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
-    port: port,
+    port,
     open: false,
     overlay: {
       warnings: false,
@@ -52,7 +52,7 @@ module.exports = {
       })
       // new MonacoWebpackPlugin()
     ],
-    name: name,
+    name,
     resolve: {
       alias: {
         '@': resolve('src')

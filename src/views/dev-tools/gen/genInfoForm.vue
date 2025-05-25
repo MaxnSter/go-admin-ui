@@ -17,7 +17,7 @@
           <span slot="label">
             应用名
             <el-tooltip content="应用名，例如：在app文件夹下将该功能发到那个应用中，默认：admin" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-input v-model="info.packageName" />
@@ -29,7 +29,7 @@
           <span slot="label">
             前端文件名
             <el-tooltip content="前端项目文件名，例如 sys-user.js " placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-input v-model="info.moduleFrontName" />
@@ -41,7 +41,7 @@
           <span slot="label">
             业务名
             <el-tooltip content="可理解为功能英文名，例如 user" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-input v-model="info.businessName" />
@@ -53,7 +53,7 @@
           <span slot="label">
             功能描述
             <el-tooltip content="同步的数据库表备注，用作类描述，例如：用户" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-input v-model="info.functionName" />
@@ -64,12 +64,12 @@
           <span slot="label">
             接口路径
             <el-tooltip content="接口路径，例如：api/v1/{sys-user}" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-input v-model="info.moduleName">
-            <template slot="prepend">api/{version}/</template>
-            <template slot="append">...</template>
+            <template #prepend>api/{version}/</template>
+            <template #append>...</template>
           </el-input>
         </el-form-item>
         <!-- <el-alert
@@ -84,7 +84,7 @@
           <span slot="label">
             是否认证
             <el-tooltip content="是指是否使用用户和角色验证中间件" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-select v-model="info.isAuth">
@@ -98,7 +98,7 @@
           <span slot="label">
             数据权限
             <el-tooltip content="暂不支持" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-select v-model="info.isDataScope" disabled>
@@ -112,7 +112,7 @@
           <span slot="label">
             是否actions
             <el-tooltip content="系统通用增删改查中间件方法" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-select v-model="info.isActions" disabled>
@@ -129,7 +129,7 @@
           <span slot="label">
             树编码字段
             <el-tooltip content="树显示的编码字段名， 如：dept_id" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-select v-model="info.treeCode" placeholder="请选择">
@@ -147,7 +147,7 @@
           <span slot="label">
             树父编码字段
             <el-tooltip content="树显示的父编码字段名， 如：parent_Id" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-select v-model="info.treeParentCode" placeholder="请选择">
@@ -165,7 +165,7 @@
           <span slot="label">
             树名称字段
             <el-tooltip content="树节点的显示名称字段名， 如：dept_name" placement="top">
-              <i class="el-icon-question" />
+              <el-icon><QuestionFilled /></el-icon>
             </el-tooltip>
           </span>
           <el-select v-model="info.treeName" placeholder="请选择">
@@ -181,7 +181,8 @@
     </el-row>
   </el-form>
 </template>
-<script>
+<script>import { QuestionFilled } from '@element-plus/icons-vue'
+
 export default {
   name: 'BasicInfoForm',
   props: {

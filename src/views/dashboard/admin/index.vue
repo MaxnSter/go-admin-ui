@@ -4,7 +4,7 @@
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="总销售额" total="￥126,560">
           <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
+            <el-icon><Warning /></el-icon>
           </el-tooltip>
           <div>
             <trend flag="top" style="margin-right: 16px;" rate="12">
@@ -14,40 +14,40 @@
               <span slot="term">日同比</span>
             </trend>
           </div>
-          <template slot="footer">日均销售额<span>￥ 234.56</span></template>
+          <template #footer>日均销售额<span>￥ 234.56</span></template>
         </chart-card>
       </el-col>
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="访问量" :total="8846">
           <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
+            <el-icon><Warning /></el-icon>
           </el-tooltip>
           <div>
             <mini-area />
           </div>
-          <template slot="footer">日访问量<span> {{ '1234' }}</span></template>
+          <template #footer>日访问量<span> {{ '1234' }}</span></template>
         </chart-card>
       </el-col>
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="支付笔数" :total="6560">
           <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
+            <el-icon><Warning /></el-icon>
           </el-tooltip>
           <div>
             <mini-bar />
           </div>
-          <template slot="footer">转化率 <span>60%</span></template>
+          <template #footer>转化率 <span>60%</span></template>
         </chart-card>
       </el-col>
       <el-col :sm="24" :xs="24" :md="6" :xl="6" :lg="6" :style="{ marginBottom: '12px' }">
         <chart-card title="运营活动效果" total="78%">
           <el-tooltip slot="action" class="item" effect="dark" content="指标说明" placement="top-start">
-            <i class="el-icon-warning-outline" />
+            <el-icon><Warning /></el-icon>
           </el-tooltip>
           <div>
             <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" height="8px" />
           </div>
-          <template slot="footer">
+          <template #footer>
             <trend flag="top" style="margin-right: 16px;" rate="12">
               <span slot="term">同周比</span>
             </trend>
@@ -89,13 +89,14 @@
   </div>
 </template>
 
-<script>
-import ChartCard from '@/components/ChartCard'
-import Trend from '@/components/Trend'
-import MiniArea from '@/components/MiniArea'
-import MiniBar from '@/components/MiniBar'
-import MiniProgress from '@/components/MiniProgress'
-import RankList from '@/components/RankList/index'
+<script>import { Warning } from '@element-plus/icons-vue'
+
+import ChartCard from '@/components/ChartCard/index.vue'
+import Trend from '@/components/Trend/index.vue'
+import MiniArea from '@/components/MiniArea/index.vue'
+import MiniBar from '@/components/MiniBar/index.vue'
+import MiniProgress from '@/components/MiniProgress/index.vue'
+import RankList from '@/components/RankList/index.vue'
 import Bar from '@/components/Bar.vue'
 
 const barData = []
@@ -162,8 +163,8 @@ export default {
   }
 }
 
-::v-deep .el-tabs__item{
-   padding-left: 16px!important;
+:deep(.el-tabs__item) {
+   padding-left: 16px !important;
    height: 50px;
    line-height: 50px;
 }

@@ -16,7 +16,7 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <el-icon><CaretBottom /></el-icon>
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/index">
@@ -32,12 +32,17 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from '@/components/TopNav'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import Search from '@/components/HeaderSearch'
+import { computed } from 'vue'
+import { CaretBottom } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
+import { useAppStore } from '@/stores/modules/app'
+import { useUserStore } from '@/stores/modules/user'
+import { useSettingsStore } from '@/stores/modules/settings'
+import Breadcrumb from '@/components/Breadcrumb/index.vue'
+import TopNav from '@/components/TopNav/index.vue'
+import Hamburger from '@/components/Hamburger/index.vue'
+import Screenfull from '@/components/Screenfull/index.vue'
+import Search from '@/components/HeaderSearch/index.vue'
 
 export default {
   components: {
@@ -45,46 +50,44 @@ export default {
     TopNav,
     Hamburger,
     Screenfull,
-    Search
+    Search,
+    CaretBottom
   },
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar',
-      'device'
-    ]),
-    setting: {
-      get() {
-        return this.$store.state.settings.showSettings
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'showSettings',
-          value: val
+  setup() {
+    const appStore = useAppStore()
+    const userStore = useUserStore()
+    const settingsStore = useSettingsStore()
+
+    const sidebar = computed(() => appStore.sidebar)
+    const avatar = computed(() => userStore.avatar)
+    const device = computed(() => appStore.device)
+    const topNav = computed(() => settingsStore.topNav)
+
+    const toggleSideBar = () => {
+      appStore.toggleSideBar()
+    }
+
+    const logout = async () => {
+      try {
+        await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
-      }
-    },
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav
+        await userStore.LogOut()
+        location.reload()
+      } catch (error) {
+        // 用户取消操作
       }
     }
 
-  },
-  methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
-    },
-    async logout() {
-      this.$confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('user/LogOut').then(() => {
-          location.reload()
-        })
-      })
+    return {
+      sidebar,
+      avatar,
+      device,
+      topNav,
+      toggleSideBar,
+      logout
     }
   }
 }

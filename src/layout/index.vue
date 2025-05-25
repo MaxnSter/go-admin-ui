@@ -1,7 +1,7 @@
 <template>
-  <div :class="classObj" class="app-wrapper" :style="{'--current-color': $store.state.settings.theme}">
+  <div :class="classObj" class="app-wrapper" :style="{'--current-color': settingsStore.theme}">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar class="sidebar-container" :style="{ backgroundColor: $store.state.settings.themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }" />
+    <sidebar class="sidebar-container" :style="{ backgroundColor: settingsStore.themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }" />
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -16,11 +16,19 @@
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel'
+import RightPanel from '@/components/RightPanel/index.vue'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-import { mapState } from 'vuex'
-import variables from '@/styles/variables.scss'
+import { useAppStore } from '@/stores/modules/app'
+import { useSettingsStore } from '@/stores/modules/settings'
+
+// Define variables directly since SCSS module import is not working in Vite
+const variables = {
+  menuBg: '#001529',
+  menuLightBg: '#ffffff',
+  sidebarTitle: '#ffffff',
+  sidebarLightTitle: '#001529'
+}
 
 export default {
   name: 'Layout',
@@ -33,14 +41,31 @@ export default {
     TagsView
   },
   mixins: [ResizeMixin],
+  setup() {
+    const appStore = useAppStore()
+    const settingsStore = useSettingsStore()
+    
+    return {
+      appStore,
+      settingsStore
+    }
+  },
   computed: {
-    ...mapState({
-      sidebar: state => state.app.sidebar,
-      device: state => state.app.device,
-      showSettings: state => state.settings.showSettings,
-      needTagsView: state => state.settings.tagsView,
-      fixedHeader: state => state.settings.fixedHeader
-    }),
+    sidebar() {
+      return this.appStore.sidebar
+    },
+    device() {
+      return this.appStore.device
+    },
+    showSettings() {
+      return this.settingsStore.showSettings
+    },
+    needTagsView() {
+      return this.settingsStore.tagsView
+    },
+    fixedHeader() {
+      return this.settingsStore.fixedHeader
+    },
     classObj() {
       return {
         hideSidebar: !this.sidebar.opened,
@@ -55,15 +80,15 @@ export default {
   },
   methods: {
     handleClickOutside() {
-      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      this.appStore.closeSideBar(false)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/styles/mixin.scss";
-  @import "~@/styles/variables.scss";
+  @import "@/styles/mixin.scss";
+  @import "@/styles/variables.scss";
 
   .app-wrapper {
     @include clearfix;

@@ -16,7 +16,7 @@
       <ul class="list-inline">
         <li>
           <span class="link-black text-sm">
-            <i class="el-icon-share" />
+            <el-icon><Share /></el-icon>
             Share
           </span>
         </li>
@@ -44,7 +44,7 @@
       <ul class="list-inline">
         <li>
           <span class="link-black text-sm">
-            <i class="el-icon-share" />
+            <el-icon><Share /></el-icon>
             Share
           </span>
         </li>
@@ -70,7 +70,7 @@
         </el-carousel>
       </div>
       <ul class="list-inline">
-        <li><span class="link-black text-sm"><i class="el-icon-share" /> Share</span></li>
+        <li><span class="link-black text-sm"><el-icon><Share /></el-icon> Share</span></li>
         <li>
           <span class="link-black text-sm">
             <svg-icon icon-class="like" /> Like</span>
@@ -80,7 +80,8 @@
   </div>
 </template>
 
-<script>
+<script>import { Share } from '@element-plus/icons-vue'
+
 const avatarPrefix = '?imageView2/1/w/80/h/80'
 const carouselPrefix = '?imageView2/2/h/440'
 

@@ -12,7 +12,7 @@ export function listSysJob(query) {
 // 查询SysJob详细
 export function getSysJob(jobId) {
   return request({
-    url: '/api/v1/sysjob/' + jobId,
+    url: `/api/v1/sysjob/${  jobId}`,
     method: 'get'
   })
 }
@@ -22,7 +22,7 @@ export function addSysJob(data) {
   return request({
     url: '/api/v1/sysjob',
     method: 'post',
-    data: data
+    data
   })
 }
 
@@ -31,7 +31,7 @@ export function updateSysJob(data) {
   return request({
     url: '/api/v1/sysjob',
     method: 'put',
-    data: data
+    data
   })
 }
 
@@ -40,14 +40,14 @@ export function delSysJob(data) {
   return request({
     url: '/api/v1/sysjob',
     method: 'delete',
-    data: data
+    data
   })
 }
 
 // 移除SysJob
 export function removeJob(jobId) {
   return request({
-    url: '/api/v1/job/remove/' + jobId,
+    url: `/api/v1/job/remove/${  jobId}`,
     method: 'get'
   })
 }
@@ -55,7 +55,7 @@ export function removeJob(jobId) {
 // 启动SysJob
 export function startJob(jobId) {
   return request({
-    url: '/api/v1/job/start/' + jobId,
+    url: `/api/v1/job/start/${  jobId}`,
     method: 'get'
   })
 }
