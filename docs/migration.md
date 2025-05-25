@@ -262,11 +262,11 @@ Vue 2 项目 → Vue 3 兼容环境 → 分模块迁移 → 优化重构 → 生
 
 **工作内容**：
 1. **第三方插件迁移**
-   - ECharts 集成更新
-   - CodeMirror 编辑器迁移
+   - ECharts 集成更新（使用 `vue-echarts` 包装器）
+   - CodeMirror 编辑器迁移（`vue-codemirror` → `@codemirror/vue`）
    - 文件上传组件更新
-   - 图片裁剪组件更新
-   - 拖拽组件更新
+   - 图片裁剪组件更新（`vue-cropper` → `vue-advanced-cropper`）
+   - 拖拽组件更新（`vuedraggable` → `vue-draggable-plus`）
 
 2. **性能优化**
    - 代码分割优化
