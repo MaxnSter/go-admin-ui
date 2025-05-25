@@ -1,7 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
-
-/* Layout */
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
 
 /**
@@ -95,23 +92,30 @@ export const constantRoutes: RouteRecordRaw[] = [
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
-export const asyncRoutes: RouteRecordRaw[] = []
+export const asyncRoutes: RouteRecordRaw[] = [
+  // 动态路由将在权限模块中添加
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior: () => ({ top: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  scrollBehavior: () => ({ top: 0 })
 })
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
+  // Vue Router 4.x 中重置路由的方式
   const newRouter = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    scrollBehavior: () => ({ top: 0 }),
     routes: constantRoutes
   })
-  // @ts-ignore
-  router.matcher = newRouter.matcher // reset router
+  
+  // 移除所有动态添加的路由
+  router.getRoutes().forEach(route => {
+    if (route.name && !constantRoutes.find(r => r.name === route.name)) {
+      router.removeRoute(route.name)
+    }
+  })
 }
 
 export default router 

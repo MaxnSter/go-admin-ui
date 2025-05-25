@@ -1,15 +1,17 @@
-import store from '@/store'
+import { useUserStore } from '@/stores/user'
+import type { Directive, DirectiveBinding } from 'vue'
 
-export default {
-  inserted(el, binding, vnode) {
+const permisaction: Directive = {
+  mounted(el: HTMLElement, binding: DirectiveBinding) {
     const { value } = binding
     const all_permission = '*:*:*'
-    const permissions = store.getters && store.getters.permisaction
+    const userStore = useUserStore()
+    const permissions = userStore.permisaction
 
     if (value && value instanceof Array && value.length > 0) {
       const permissionFlag = value
 
-      const hasPermissions = permissions.some(permission => {
+      const hasPermissions = permissions.some((permission: string) => {
         return all_permission === permission || permissionFlag.includes(permission)
       })
 
@@ -21,3 +23,5 @@ export default {
     }
   }
 }
+
+export default permisaction 
