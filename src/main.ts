@@ -2,21 +2,22 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { setupStore } from './stores'
+import ElementPlus, { ElMessage } from 'element-plus'
+import * as Icons from '@element-plus/icons-vue'
+import '@/styles/element-variables.scss'
 
 // 样式导入
 import 'normalize.css/normalize.css'
 import '@/styles/index.scss'
 import '@/styles/admin.scss'
 
-// Element Plus 按需导入（通过 unplugin-vue-components 自动处理）
-// import ElementPlus from 'element-plus'
-// import 'element-plus/dist/index.css'
-
 // 图标
 import './icons'
 
 // 权限控制
 import './permission'
+import PermissionDirective from '@/directive/permission'
+import * as filters from '@/filters'
 
 // 错误日志
 import './utils/error-log'
@@ -31,24 +32,35 @@ const app = createApp(App)
 // 使用插件
 setupStore(app)
 app.use(router)
+app.use(ElementPlus)
+
+// 注册所有图标组件
+Object.entries(Icons).forEach(([key, component]) => {
+  app.component(key, component)
+})
+app.use(PermissionDirective)
 
 // 注册全局组件
 app.component('Pagination', Pagination)
 app.component('BasicLayout', BasicLayout)
 
+Object.keys(filters).forEach((key) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app.config.globalProperties[`$${key}`] = (filters as any)[key]
+})
+
 // 全局属性（替代 Vue.prototype）
-app.config.globalProperties.msgSuccess = function(msg: string) {
-  // 这里需要在任务3中实现 Element Plus 的 message 组件
-  console.log('Success:', msg)
+app.config.globalProperties.msgSuccess = (msg: string) => {
+  ElMessage.success(msg)
 }
 
-app.config.globalProperties.msgError = function(msg: string) {
-  console.log('Error:', msg)
+app.config.globalProperties.msgError = (msg: string) => {
+  ElMessage.error(msg)
 }
 
-app.config.globalProperties.msgInfo = function(msg: string) {
-  console.log('Info:', msg)
+app.config.globalProperties.msgInfo = (msg: string) => {
+  ElMessage.info(msg)
 }
 
 // 挂载应用
-app.mount('#app') 
+app.mount('#app')
