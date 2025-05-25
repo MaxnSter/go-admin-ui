@@ -87,6 +87,35 @@ function checkDependencies() {
         warnings.push(`发现 Vue 2 相关依赖 ${dep} (${allDeps[dep]})，可能需要移除或更新`)
       }
     })
+
+    // 第三方插件迁移检查
+    if (allDeps['vue-codemirror']) {
+      warnings.push(`检测到 vue-codemirror (${allDeps['vue-codemirror']})，建议迁移到 @codemirror/vue`)
+    }
+    if (!deps['@codemirror/vue']) {
+      warnings.push('缺少 @codemirror/vue 依赖')
+    }
+
+    if (allDeps['vue-cropper']) {
+      warnings.push(`检测到 vue-cropper (${allDeps['vue-cropper']})，建议迁移到 vue-advanced-cropper`)
+    }
+    if (!deps['vue-advanced-cropper']) {
+      warnings.push('缺少 vue-advanced-cropper 依赖')
+    }
+
+    if (allDeps.vuedraggable) {
+      warnings.push(`检测到 vuedraggable (${allDeps.vuedraggable})，建议迁移到 vue-draggable-plus`)
+    }
+    if (!deps['vue-draggable-plus']) {
+      warnings.push('缺少 vue-draggable-plus 依赖')
+    }
+
+    if (allDeps.echarts && !/^\^?5\./.test(allDeps.echarts)) {
+      warnings.push(`ECharts 版本过旧 (${allDeps.echarts})，建议升级到 5.x`)
+    }
+    if (!deps['vue-echarts']) {
+      warnings.push('缺少 vue-echarts 依赖')
+    }
     
     // 输出结果
     if (warnings.length > 0) {
