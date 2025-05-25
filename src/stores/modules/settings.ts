@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-// @ts-ignore - SCSS 变量文件没有类型声明
-import variables from '@/styles/element-variables.scss'
+// 直接使用 CSS 变量，不再导入 SCSS 文件
+// import variables from '@/styles/element-variables.scss'
 // @ts-ignore - 设置文件没有类型声明
 import defaultSettings from '@/settings'
 import type { AppSettings } from '../types'
@@ -10,7 +10,7 @@ const { showSettings, topNav, tagsView, fixedHeader, sidebarLogo, themeStyle } =
 
 export const useSettingsStore = defineStore('settings', () => {
   // 状态定义
-  const theme = ref<string>((variables as any).theme || '#409EFF')
+  const theme = ref<string>('#1890ff') // 使用默认主题色
   const showSettingsPanel = ref<boolean>(showSettings)
   const topNavigation = ref<boolean>(topNav)
   const tagsViewEnabled = ref<boolean>(tagsView)
@@ -54,7 +54,7 @@ export const useSettingsStore = defineStore('settings', () => {
    * 重置设置为默认值
    */
   const resetSettings = (): void => {
-    theme.value = (variables as any).theme || '#409EFF'
+    theme.value = '#1890ff' // 使用默认主题色
     showSettingsPanel.value = showSettings
     topNavigation.value = topNav
     tagsViewEnabled.value = tagsView

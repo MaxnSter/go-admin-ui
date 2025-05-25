@@ -341,69 +341,158 @@ pnpm verify:task3     # 完整验证流程
 
 ## 问题跟踪和解决记录
 
-### 🔥 紧急问题跟踪（2024-12-28）
+### 🔥 紧急问题跟踪（2024-12-28 更新）
 
-#### 问题1：Element UI 样式引用错误
-- **状态**：❌ 未解决
-- **错误信息**：`Can't find stylesheet to import. @import "~element-ui/packages/theme-chalk/src/index"`
-- **文件位置**：`src/styles/element-variables.scss:25:9`
-- **解决方案**：需要替换为 Element Plus 样式引用
-- **预计工作量**：0.5天
+#### 问题1：Element Plus SASS 配置冲突 ⭐⭐⭐⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`@use rules must be written before any other rules. @import "@/styles/variables.scss";@use 'sass:map';`
+- **影响范围**：所有 Element Plus 组件无法编译
+- **根本原因**：Vite 配置中的 `importStyle: 'sass'` 与项目 SASS 配置冲突
+- **解决方案**：禁用 SASS 导入，使用 CSS 方式
+- **实际工作量**：0.5天
 
-#### 问题2：布局组件导入失败
-- **状态**：❌ 未解决
+#### 问题2：Vuex 残留引用 ⭐⭐⭐⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`Failed to resolve import "vuex" from "src/layout/components/Navbar.vue"`
+- **影响范围**：多个布局组件
+- **根本原因**：Task2 状态管理迁移不完整
+- **解决方案**：完成 Vuex 到 Pinia 的迁移
+- **进展**：已修复 Navbar、Sidebar、Settings 等所有组件
+- **实际工作量**：1天
+
+#### 问题3：组件导入路径问题 ⭐⭐⭐⭐
+- **状态**：✅ 已解决
 - **错误信息**：
   ```
-  Failed to resolve import "@/components/RightPanel"
-  Failed to resolve import "./AppMain"
+  Failed to resolve import "@/components/ThemePicker"
   Failed to resolve import "./Logo"
-  Failed to resolve import "@/layout"
+  Failed to resolve import "path-to-regexp"
   ```
-- **影响范围**：整个布局系统
-- **解决方案**：检查组件文件结构和导出配置
-- **预计工作量**：1天
+- **影响范围**：大量组件无法正常导入
+- **根本原因**：组件导入路径缺少 .vue 扩展名
+- **解决方案**：修复组件导入路径，添加完整的文件扩展名
+- **实际工作量**：0.5天
 
-#### 问题3：SASS 路径配置错误
-- **状态**：❌ 未解决
-- **错误信息**：`Can't find stylesheet to import. @import "~@/styles/mixin.scss"`
-- **解决方案**：更新 Vite SASS 配置
+#### 问题4：Element Plus 样式导入问题 ⭐⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`Failed to resolve import "element-plus/es/components/submenu/style/index"`
+- **影响范围**：特定 Element Plus 组件
+- **根本原因**：自动导入配置不完整
+- **解决方案**：修复 Element Plus 自动导入配置
+- **实际工作量**：0.5天
+
+#### 问题5：Vue 3 语法过时警告 ⭐⭐
+- **状态**：🟡 需要修复
+- **错误信息**：`::v-deep usage as a combinator has been deprecated`
+- **影响范围**：多个组件样式
+- **根本原因**：Vue 2 语法残留
+- **解决方案**：更新为 `:deep()` 语法
 - **预计工作量**：0.5天
+
+#### 问题6：SCSS 变量导入问题 ⭐⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`The requested module '/src/styles/variables.scss' does not provide an export named 'default'`
+- **影响范围**：Logo、Sidebar 等组件
+- **根本原因**：Vite 中 SCSS 模块导入方式不同
+- **解决方案**：直接定义变量对象替代 SCSS 导入
+- **实际工作量**：0.5天
+
+#### 问题7：缺失指令实现 ⭐⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`The requested module '/src/directive/el-table/adaptive.ts' does not provide an export named 'default'`
+- **影响范围**：表格自适应功能
+- **根本原因**：adaptive.ts 文件为空
+- **解决方案**：实现 Vue 3 兼容的表格高度自适应指令
+- **实际工作量**：0.5天
+
+#### 问题8：Node.js 环境变量问题 ⭐⭐⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`process is not defined`、`require is not defined`
+- **影响范围**：多个工具文件和组件
+- **根本原因**：浏览器环境中使用了 Node.js 特有的 API
+- **解决方案**：
+  - 将 `process.env` 替换为 `import.meta.env`
+  - 将 `require()` 替换为 ES6 `import` 语法
+  - 更新环境变量命名为 Vite 规范（`VITE_` 前缀）
+- **实际工作量**：1天
+
+#### 问题9：登录页面函数初始化顺序 ⭐⭐
+- **状态**：✅ 已解决
+- **错误信息**：`Cannot access 'getOtherQuery' before initialization`
+- **影响范围**：登录页面
+- **根本原因**：Vue 3 Composition API 中函数定义顺序错误
+- **解决方案**：重新排列函数定义顺序，确保依赖函数在使用前定义
+- **实际工作量**：0.5天
 
 ### 📊 迁移进度跟踪
 
 | 阶段 | 状态 | 完成度 | 备注 |
 |------|------|--------|------|
-| **阶段0：紧急修复** | 🔄 进行中 | 0% | 当前阻塞问题 |
-| **阶段1：基础配置** | ⏸️ 暂停 | 0% | 等待紧急修复完成 |
-| **阶段2：表单组件** | ⏸️ 暂停 | 0% | 等待基础配置完成 |
-| **阶段3：表格组件** | ⏸️ 暂停 | 0% | 等待表单组件完成 |
-| **阶段4：弹窗导航** | ⏸️ 暂停 | 0% | 等待表格组件完成 |
-| **阶段5：第三方组件** | ⏸️ 暂停 | 0% | 等待核心组件完成 |
-| **阶段6：样式优化** | ⏸️ 暂停 | 0% | 最后阶段 |
+| **阶段0：紧急修复** | ✅ 已完成 | 95% | 主要系统性问题已解决 |
+| **阶段1：基础配置** | ✅ 已完成 | 90% | Element Plus 已配置，部分样式待优化 |
+| **阶段2：表单组件** | 🔄 进行中 | 30% | 基础表单组件可用，复杂组件待迁移 |
+| **阶段3：表格组件** | ⏸️ 暂停 | 10% | 等待表单组件完成 |
+| **阶段4：弹窗导航** | ⏸️ 暂停 | 10% | 等待前置阶段完成 |
+| **阶段5：第三方组件** | 🟡 部分完成 | 60% | ECharts、CodeMirror 已升级 |
+| **阶段6：样式优化** | 🔄 进行中 | 40% | SASS 警告待修复 |
 
-### 🎯 下一步行动计划
+**总体完成度：约 50-60%**
 
-#### 立即执行（今天）
-1. **修复 Element UI 样式引用**
-   - 检查 `src/styles/element-variables.scss`
-   - 替换 Element UI 引用为 Element Plus
-   - 更新主题变量配置
+### 🚨 当前状态总结
 
-2. **修复组件导入问题**
-   - 检查 `src/layout/components/index.js`
-   - 确认所有布局组件文件存在
-   - 修复导出配置
+#### ✅ 已解决的关键问题：
+1. **Element Plus SASS 配置冲突** - 系统可正常启动
+2. **Vuex 残留引用** - 所有组件已迁移到 Pinia
+3. **组件导入路径问题** - 所有导入路径已修复
+4. **Node.js 环境变量问题** - 浏览器兼容性已解决
+5. **缺失指令实现** - 表格自适应指令已实现
+6. **SCSS 变量导入问题** - 变量系统已重构
+7. **登录页面恢复** - 完整登录功能已恢复并兼容 Vue 3
 
-#### 明天执行
-1. **完成 SASS 配置修复**
-2. **验证基础环境正常运行**
-3. **开始阶段1的正式迁移工作**
+#### 🟡 当前待解决问题：
+1. **Vue 3 语法过时警告** - `::v-deep` 需更新为 `:deep()`
+2. **SASS 导入警告** - 需要更新为现代 SASS 语法
+3. **部分组件迁移** - 复杂表单和表格组件待完善
+
+#### 🎯 系统当前状态：
+- ✅ **开发服务器正常运行**（HTTP 200）
+- ✅ **登录页面完全可用**
+- ✅ **基础 Element Plus 组件正常工作**
+- ✅ **Pinia 状态管理正常**
+- ✅ **Vue 3 Composition API 正常**
+- ⚠️ **存在样式警告但不影响功能**
+
+### 🎯 下一步行动计划（按优先级排序）
+
+#### 🟡 中等优先级（本周完成）
+1. **修复 Vue 3 语法警告**
+   - 替换所有 `::v-deep` 为 `:deep()`
+   - 更新过时的 Vue 语法
+
+2. **完善表单组件迁移**
+   - 验证复杂表单组件功能
+   - 修复表单验证和交互问题
+
+3. **优化样式系统**
+   - 更新 SASS 导入语法
+   - 清理未使用的样式
+
+#### 📅 后续执行 - 低优先级
+1. **完成表格组件迁移**
+   - 迁移复杂表格功能
+   - 验证数据操作功能
+
+2. **完善第三方组件**
+   - 验证所有第三方组件功能
+   - 优化组件性能
 
 ### 📝 经验教训记录
 
-1. **Task 依赖关系**：Task2 和 Task3 虽然可以并行，但存在交叉依赖
-2. **样式系统优先级**：样式系统问题会阻塞整个开发流程
-3. **组件结构重要性**：组件导入导出结构需要优先确保正确
+1. **系统性问题优先级最高**：配置和环境问题会阻塞整个开发流程
+2. **Vue 2 到 Vue 3 迁移复杂度**：不仅是 API 变更，还涉及生态系统兼容性
+3. **Element Plus 配置复杂性**：自动导入和样式系统需要精细配置
+4. **状态管理迁移影响面广**：Vuex 到 Pinia 的迁移影响多个组件
+5. **环境变量系统差异**：Vite 和 Webpack 的环境变量处理方式不同
 
 ## 后续优化方向
 

@@ -11,7 +11,7 @@
                 placeholder="请输入名称"
                 clearable
                 size="small"
-                @keyup.enter.native="handleQuery"
+                @keyup.enter="handleQuery"
               />
             </el-form-item>
             <el-form-item label="任务分组" prop="jobGroup">
@@ -46,8 +46,8 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+              <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+              <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
             </el-form-item>
           </el-form>
 
@@ -56,8 +56,8 @@
               <el-button
                 v-permisaction="['job:sysJob:add']"
                 type="primary"
-                icon="el-icon-plus"
-                size="mini"
+                :icon="Plus"
+                size="small"
                 @click="handleAdd"
               >新增
               </el-button>
@@ -66,8 +66,8 @@
               <el-button
                 v-permisaction="['job:sysJob:edit']"
                 type="success"
-                icon="el-icon-edit"
-                size="mini"
+                :icon="Edit"
+                size="small"
                 :disabled="single"
                 @click="handleUpdate"
               >修改
@@ -77,8 +77,8 @@
               <el-button
                 v-permisaction="['job:sysJob:remove']"
                 type="danger"
-                icon="el-icon-delete"
-                size="mini"
+                :icon="Delete"
+                size="small"
                 :disabled="multiple"
                 @click="handleDelete"
               >删除
@@ -88,8 +88,8 @@
               <el-button
                 v-permisaction="['job:sysJob:log']"
                 type="danger"
-                icon="el-icon-delete"
-                size="mini"
+                :icon="Delete"
+                size="small"
                 @click="handleLog"
               >日志
               </el-button>
@@ -118,7 +118,7 @@
               :formatter="jobGroupFormat"
               width="100"
             >
-              <template slot-scope="scope">
+              <template #default="scope">
                 {{ jobGroupFormat(scope.row) }}
               </template>
             </el-table-column>
@@ -141,43 +141,43 @@
               :formatter="statusFormat"
               width="100"
             >
-              <template slot-scope="scope">
+              <template #default="scope">
                 {{ statusFormat(scope.row) }}
               </template>
             </el-table-column>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-              <template slot-scope="scope">
+              <template #default="scope">
                 <el-button
                   v-permisaction="['job:sysJob:edit']"
-                  size="mini"
+                  size="small"
                   type="text"
-                  icon="el-icon-edit"
+                  :icon="Edit"
                   @click="handleUpdate(scope.row)"
                 >修改
                 </el-button>
                 <el-button
                   v-if="scope.row.entry_id!==0&& scope.row.status!=1"
                   v-permisaction="['job:sysJob:remove']"
-                  size="mini"
+                  size="small"
                   type="text"
-                  icon="el-icon-edit"
+                  :icon="Edit"
                   @click="handleRemove(scope.row)"
                 >停止
                 </el-button>
                 <el-button
                   v-if="scope.row.entry_id==0 && scope.row.status!=1"
                   v-permisaction="['job:sysJob:start']"
-                  size="mini"
+                  size="small"
                   type="text"
-                  icon="el-icon-edit"
+                  :icon="Edit"
                   @click="handleStart(scope.row)"
                 >启动
                 </el-button>
                 <el-button
                   v-permisaction="['job:sysJob:remove']"
-                  size="mini"
+                  size="small"
                   type="text"
-                  icon="el-icon-delete"
+                  :icon="Delete"
                   @click="handleDelete(scope.row)"
                 >删除
                 </el-button>
@@ -188,13 +188,13 @@
           <pagination
             v-show="total>0"
             :total="total"
-            :page.sync="queryParams.pageIndex"
-            :limit.sync="queryParams.pageSize"
+            v-model:page="queryParams.pageIndex"
+            v-model:limit="queryParams.pageSize"
             @pagination="getList"
           />
 
           <!-- 添加或修改对话框 -->
-          <el-dialog v-dialogDrag :title="title" :visible.sync="open" width="700px" append-to-body :close-on-click-modal="false">
+          <el-dialog v-dialogDrag :title="title" v-model:visible="open" width="700px" append-to-body :close-on-click-modal="false">
             <el-form ref="form" :model="form" :rules="rules" label-width="120px">
               <el-row>
                 <el-col :span="12">
@@ -229,7 +229,7 @@
                           调用示例：func (t *EXEC) ExamplesNoParam(){..} 填写 ExamplesNoParam 即可；
                           <br>参数说明：目前不支持带参调用
                         </div>
-                        <i class="el-icon-question" />
+                        <el-icon><QuestionFilled /></el-icon>
                       </el-tooltip>
                     </span>
                     <el-input
@@ -247,7 +247,7 @@
                           参数示例：有参：请以string格式填写；无参：为空；
                           <br>参数说明：目前仅支持函数调用
                         </div>
-                        <i class="el-icon-question" />
+                        <el-icon><QuestionFilled /></el-icon>
                       </el-tooltip>
                     </span>
                     <el-input
@@ -319,7 +319,8 @@
   </div>
 </template>
 
-<script>
+<script>import { Search, Refresh, Plus, Edit, Delete, QuestionFilled } from '@element-plus/icons-vue'
+
 import { addSysJob, delSysJob, getSysJob, listSysJob, updateSysJob, removeJob, startJob } from '@/api/job/sys-job'
 
 export default {

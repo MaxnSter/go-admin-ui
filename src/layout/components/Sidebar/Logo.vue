@@ -1,22 +1,30 @@
 <template>
-  <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: $store.state.settings.themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }">
+  <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: settingsStore.themeStyle === 'dark' ? variables.menuBg : variables.menuLightBg }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
         <img v-if="appInfo.sys_app_logo" :src="appInfo.sys_app_logo" class="sidebar-logo">
-        <h1 v-else class="sidebar-title" :style="{ color: $store.state.settings.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo.sys_app_name }} </h1>
+        <h1 v-else class="sidebar-title" :style="{ color: settingsStore.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo.sys_app_name }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img v-if="appInfo.sys_app_logo" :src="appInfo.sys_app_logo" class="sidebar-logo">
-        <h1 class="sidebar-title" :style="{ color: $store.state.settings.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo.sys_app_name }} </h1>
+        <h1 class="sidebar-title" :style="{ color: settingsStore.themeStyle === 'dark' ? variables.sidebarTitle : variables.sidebarLightTitle }">{{ appInfo.sys_app_name }} </h1>
       </router-link>
     </transition>
   </div>
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useAppStore } from '@/stores/modules/app'
+import { useSettingsStore } from '@/stores/modules/settings'
 
-import variables from '@/styles/variables.scss'
-import { mapGetters } from 'vuex'
+// Define variables directly since SCSS module import is not working in Vite
+const variables = {
+  menuBg: '#001529',
+  menuLightBg: '#ffffff',
+  sidebarTitle: '#ffffff',
+  sidebarLightTitle: '#001529'
+}
 
 export default {
   name: 'SidebarLogo',
@@ -26,12 +34,16 @@ export default {
       required: true
     }
   },
-  computed: {
-    ...mapGetters([
-      'appInfo'
-    ]),
-    variables() {
-      return variables
+  setup() {
+    const appStore = useAppStore()
+    const settingsStore = useSettingsStore()
+
+    const appInfo = computed(() => appStore.appInfo)
+
+    return {
+      appInfo,
+      variables,
+      settingsStore
     }
   }
 }

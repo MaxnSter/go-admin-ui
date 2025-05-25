@@ -16,12 +16,19 @@
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel'
+import RightPanel from '@/components/RightPanel/index.vue'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { useAppStore } from '@/stores/modules/app'
 import { useSettingsStore } from '@/stores/modules/settings'
-import variables from '@/styles/variables.scss'
+
+// Define variables directly since SCSS module import is not working in Vite
+const variables = {
+  menuBg: '#001529',
+  menuLightBg: '#ffffff',
+  sidebarTitle: '#ffffff',
+  sidebarLightTitle: '#001529'
+}
 
 export default {
   name: 'Layout',
@@ -80,8 +87,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/styles/mixin.scss";
-  @import "~@/styles/variables.scss";
+  @import "@/styles/mixin.scss";
+  @import "@/styles/variables.scss";
 
   .app-wrapper {
     @include clearfix;

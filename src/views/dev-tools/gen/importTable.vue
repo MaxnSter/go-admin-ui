@@ -1,6 +1,6 @@
 <template>
   <!-- 导入表 -->
-  <el-dialog title="导入表" :visible.sync="visible" width="800px" top="5vh">
+  <el-dialog title="导入表" v-model:visible="visible" width="800px" top="5vh">
     <el-form ref="queryForm" :model="queryParams" :inline="true">
       <el-form-item label="表名称" prop="tableName">
         <el-input
@@ -8,7 +8,7 @@
           placeholder="请输入表名称"
           clearable
           size="small"
-          @keyup.enter.native="handleQuery"
+          @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="表描述" prop="tableComment">
@@ -17,12 +17,12 @@
           placeholder="请输入表描述"
           clearable
           size="small"
-          @keyup.enter.native="handleQuery"
+          @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+        <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row>
@@ -36,8 +36,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="queryParams.pageIndex"
-        :limit.sync="queryParams.pageSize"
+        v-model:page="queryParams.pageIndex"
+        v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
     </el-row>
@@ -48,7 +48,8 @@
   </el-dialog>
 </template>
 
-<script>
+<script>import { Search, Refresh } from '@element-plus/icons-vue'
+
 import { listDbTable, importTable } from '@/api/tools/gen'
 export default {
   data() {

@@ -9,7 +9,7 @@
       drag
       action="https://httpbin.org/post"
     >
-      <i class="el-icon-upload" />
+      <el-icon><Upload /></el-icon>
       <div class="el-upload__text">
         将文件拖到此处，或<em>点击上传</em>
       </div>
@@ -18,7 +18,7 @@
       <div v-show="imageUrl.length>1" class="image-preview-wrapper">
         <img :src="imageUrl">
         <div class="image-preview-action">
-          <i class="el-icon-delete" @click="rmImage" />
+          <el-icon><Delete /></el-icon>
         </div>
       </div>
     </div>
@@ -26,14 +26,15 @@
       <div v-show="imageUrl.length>1" class="image-preview-wrapper">
         <img :src="imageUrl">
         <div class="image-preview-action">
-          <i class="el-icon-delete" @click="rmImage" />
+          <el-icon><Delete /></el-icon>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script>import { Delete, Upload } from '@element-plus/icons-vue'
+
 // import { getToken } from '@/api/qiniu'
 
 export default {

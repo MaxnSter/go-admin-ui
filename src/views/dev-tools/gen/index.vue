@@ -9,7 +9,7 @@
               placeholder="请输入表名称"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             />
           </el-form-item>
           <el-form-item label="菜单名称" prop="tableComment">
@@ -18,20 +18,20 @@
               placeholder="请输入菜单名称"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+            <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
           <!-- <el-button
               type="primary"
-              icon="el-icon-download"
-              size="mini"
+              :icon="Download"
+              size="small"
               @click="handleGenTable"
             >生成</el-button> -->
           </el-col>
@@ -39,8 +39,8 @@
             <el-button
 
               type="info"
-              icon="el-icon-upload"
-              size="mini"
+              :icon="Upload"
+              size="small"
               @click="openImportTable"
             >导入</el-button>
           </el-col>
@@ -48,8 +48,8 @@
             <el-button
 
               type="success"
-              icon="el-icon-edit"
-              size="mini"
+              :icon="Edit"
+              size="small"
               :disabled="single"
               @click="handleEditTable"
             >修改</el-button>
@@ -58,8 +58,8 @@
             <el-button
 
               type="danger"
-              icon="el-icon-delete"
-              size="mini"
+              :icon="Delete"
+              size="small"
               :disabled="multiple"
               @click="handleDelete"
             >删除</el-button>
@@ -91,29 +91,29 @@
             width="130"
           />
           <el-table-column label="创建时间" align="center" prop="createdAt" width="165">
-            <template slot-scope="scope">
+            <template #default="scope">
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-button
                 type="text"
                 size="small"
-                icon="el-icon-edit"
+                :icon="Edit"
                 @click="handleEditTable(scope.row)"
               >编辑</el-button>
               <el-button
                 type="text"
                 size="small"
-                icon="el-icon-view"
+                :icon="View"
                 @click="handlePreview(scope.row)"
               >预览</el-button>
                 <el-button
                   slot="reference"
                   type="text"
                   size="small"
-                  icon="el-icon-view"
+                  :icon="View"
                   @click="handleToProject(scope.row)"
                 >代码生成</el-button>
 
@@ -121,7 +121,7 @@
                   slot="reference"
                   type="text"
                   size="small"
-                  icon="el-icon-view"
+                  :icon="View"
                   @click="handleToDB(scope.row)"
                 >生成配置</el-button>
 
@@ -130,7 +130,7 @@
                   slot="reference"
                   type="text"
                   size="small"
-                  icon="el-icon-view"
+                  :icon="View"
                    @click="handleToApiFile(scope.row)"
                 >生成迁移脚本</el-button>
                 
@@ -138,7 +138,7 @@
                   slot="reference"
                   type="text"
                   size="small"
-                  icon="el-icon-delete"
+                  :icon="Delete"
                   @click="handleSingleDelete(scope.row)"
                 >删除</el-button>
             </template>
@@ -147,15 +147,15 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageIndex"
-          :limit.sync="queryParams.pageSize"
+          v-model:page="queryParams.pageIndex"
+          v-model:limit="queryParams.pageSize"
           @pagination="getList"
         />
       </el-card>
 
       <!-- 预览界面 -->
 
-      <el-dialog class="preview" :title="preview.title" :visible.sync="preview.open" :close-on-click-modal="false" fullscreen>
+      <el-dialog class="preview" :title="preview.title" v-model:visible="preview.open" :close-on-click-modal="false" fullscreen>
         <div class="el-dialog-container">
           <div class="tag-group">
             <!-- eslint-disable-next-line vue/valid-v-for -->
@@ -188,14 +188,13 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Search, Refresh, Edit, Delete, Download, Upload, View } from '@element-plus/icons-vue'
+
 import { listTable, previewTable, delTable, toDBTable, toProjectTableCheckRole, apiToFile } from '@/api/tools/gen'
 import importTable from './importTable'
 import { downLoadFile } from '@/utils/zipdownload'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/theme/material-palenight.css'
-
-require('codemirror/mode/javascript/javascript')
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/go/go'
 import 'codemirror/mode/vue/vue'

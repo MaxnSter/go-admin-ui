@@ -1,7 +1,18 @@
+<template>
+  <div>
+    <svg-icon v-if="icon" :icon-class="icon" />
+    <span v-if="title">{{ title }}</span>
+  </div>
+</template>
+
 <script>
+import SvgIcon from '@/components/SvgIcon/index.vue'
+
 export default {
   name: 'MenuItem',
-  functional: true,
+  components: {
+    SvgIcon
+  },
   props: {
     icon: {
       type: String,
@@ -11,19 +22,6 @@ export default {
       type: String,
       default: ''
     }
-  },
-  render(h, context) {
-    const { icon, title } = context.props
-    const vnodes = []
-
-    if (icon) {
-      vnodes.push(<svg-icon icon-class={icon}/>)
-    }
-
-    if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
-    }
-    return vnodes
   }
 }
 </script>

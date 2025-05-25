@@ -38,7 +38,7 @@
                     <el-col :sm="12" :md="12" class="line">
                       <el-row>
                         <el-col span="12" :sm="8" :md="8" xs="12">
-                          下载<i class="el-icon-caret-bottom" />
+                          下载<el-icon><CaretBottom /></el-icon>
                         </el-col>
                         <el-col span="12" :sm="16" :md="16" xs="12" class="line-value">
                           {{ info.net.in }}KB
@@ -48,7 +48,7 @@
                     <el-col :sm="12" :md="12" class="line">
                       <el-row border>
                         <el-col span="12" :sm="6" :md="8">
-                          上传<i class="el-icon-caret-top" />
+                          上传<el-icon><CaretTop /></el-icon>
                         </el-col>
                         <el-col span="12" :sm="6" :md="16" class="line-value">
                           {{ info.net.out }}KB
@@ -121,7 +121,8 @@
   </div>
 </template>
 
-<script>
+<script>import { CaretBottom, CaretTop } from '@element-plus/icons-vue'
+
 import Cell from '@/components/Cell/index'
 import {
   getServer

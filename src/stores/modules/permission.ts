@@ -32,9 +32,9 @@ export function generaMenu(routes: any[], data: any[]): void {
   })
 }
 
-// @ts-ignore - require 语法兼容性
-export const loadView = (view: string) => { // 路由懒加载
-  return (resolve: any) => require([`@/views${view}`], resolve)
+// 路由懒加载 - 使用 Vite 动态导入
+export const loadView = (view: string) => {
+  return () => import(`@/views${view}.vue`)
 }
 
 export const usePermissionStore = defineStore('permission', () => {

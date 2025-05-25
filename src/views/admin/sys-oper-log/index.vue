@@ -33,8 +33,8 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+            <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
 
@@ -43,8 +43,8 @@
             <el-button
               v-permisaction="['admin:sysOperLog:remove']"
               type="danger"
-              icon="el-icon-delete"
-              size="mini"
+              :icon="Delete"
+              size="small"
               :disabled="multiple"
               @click="handleDelete"
             >删除</el-button>
@@ -53,8 +53,8 @@
             <el-button
               v-permisaction="['admin:sysOperLog:export']"
               type="warning"
-              icon="el-icon-download"
-              size="mini"
+              :icon="Download"
+              size="small"
               @click="handleExport"
             >导出</el-button>
           </el-col>
@@ -67,7 +67,7 @@
             label="Request info"
             prop="operUrl"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-popover trigger="hover" placement="top">
 
                 <p>Request:
@@ -102,13 +102,13 @@
             width="80"
             :show-overflow-tooltip="true"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-tag v-if="scope.row.status=='2'" type="success">{{ statusFormat(scope.row,scope.row.status) }}</el-tag>
               <el-tag v-if="scope.row.status=='1'" type="danger">{{ statusFormat(scope.row,scope.row.status) }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作日期" prop="operTime" width="160">
-            <template slot-scope="scope">
+            <template #default="scope">
               <span>{{ parseTime(scope.row.operTime) }}</span>
             </template>
           </el-table-column>
@@ -117,12 +117,12 @@
             width="80"
             class-name="small-padding fixed-width"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-button
                 v-permisaction="['admin:sysOperLog:query']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-view"
+                :icon="View"
                 @click="handleView(scope.row,scope.index)"
               >详细</el-button>
             </template>
@@ -132,14 +132,14 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageIndex"
-          :limit.sync="queryParams.pageSize"
+          v-model:page="queryParams.pageIndex"
+          v-model:limit="queryParams.pageSize"
           @pagination="getList"
         />
 
         <!-- 操作日志详细 -->
-        <el-dialog title="操作日志详细" :visible.sync="open" width="700px" :close-on-click-modal="false">
-          <el-form ref="form" :model="form" label-width="100px" size="mini">
+        <el-dialog title="操作日志详细" v-model:visible="open" width="700px" :close-on-click-modal="false">
+          <el-form ref="form" :model="form" label-width="100px" size="small">
             <el-row>
               <el-col :span="24">
                 <el-form-item label="请求地址：">{{ form.operUrl }}</el-form-item>
@@ -185,7 +185,8 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Search, Refresh, Delete, Download, View } from '@element-plus/icons-vue'
+
 import { listSysOperlog, delSysOperlog, cleanOperlog } from '@/api/admin/sys-opera-log'
 import { formatJson } from '@/utils'
 

@@ -9,7 +9,7 @@
               placeholder="请输入部门名称"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             />
           </el-form-item>
           <el-form-item label="状态">
@@ -26,16 +26,16 @@
             <el-button
               class="filter-item"
               type="primary"
-              icon="el-icon-search"
-              size="mini"
+              :icon="Search"
+              size="small"
               @click="handleQuery"
             >搜索</el-button>
             <el-button
               v-permisaction="['admin:sysDept:add']"
               class="filter-item"
               type="primary"
-              icon="el-icon-plus"
-              size="mini"
+              :icon="Plus"
+              size="small"
               @click="handleAdd"
             >新增</el-button>
           </el-form-item>
@@ -52,7 +52,7 @@
           <el-table-column prop="deptName" label="部门名称" />
           <el-table-column prop="sort" label="排序" width="200" />
           <el-table-column prop="status" label="状态" :formatter="statusFormat" width="100">
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-tag
                 :type="scope.row.status === 1 ? 'danger' : 'success'"
                 disable-transitions
@@ -60,32 +60,32 @@
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createdAt" width="200">
-            <template slot-scope="scope">
+            <template #default="scope">
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-button
                 v-permisaction="['admin:sysDept:edit']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-edit"
+                :icon="Edit"
                 @click="handleUpdate(scope.row)"
               >修改</el-button>
               <el-button
                 v-permisaction="['admin:sysDept:add']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-plus"
+                :icon="Plus"
                 @click="handleAdd(scope.row)"
               >新增</el-button>
               <el-button
                 v-if="scope.row.p_id != 0"
                 v-permisaction="['admin:sysDept:remove']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-delete"
+                :icon="Delete"
                 @click="handleDelete(scope.row)"
               >删除</el-button>
             </template>
@@ -93,7 +93,7 @@
         </el-table>
 
         <!-- 添加或修改部门对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="600px" :close-on-click-modal="false">
+        <el-dialog :title="title" v-model:visible="open" width="600px" :close-on-click-modal="false">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             <el-row>
               <el-col :span="24">
@@ -156,10 +156,11 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
+
 import { getDeptList, getDept, delDept, addDept, updateDept } from '@/api/admin/sys-dept'
-import Treeselect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import Treeselect from '@zanmato/vue3-treeselect'
+import '@zanmato/vue3-treeselect/dist/vue3-treeselect.min.css'
 
 export default {
   name: 'SysDeptManage',

@@ -9,7 +9,7 @@
             placeholder="请输入用户名"
             clearable
             size="small"
-            @keyup.enter.native="handleQuery"
+            @keyup.enter="handleQuery"
           />
           </el-form-item>
           <el-form-item label="状态" prop="status"><el-select
@@ -31,13 +31,13 @@
             placeholder="请输入ip地址"
             clearable
             size="small"
-            @keyup.enter.native="handleQuery"
+            @keyup.enter="handleQuery"
           />
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+            <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
 
@@ -46,8 +46,8 @@
             <el-button
               v-permisaction="['admin:sysLoginLog:remove']"
               type="danger"
-              icon="el-icon-delete"
-              size="mini"
+              :icon="Delete"
+              size="small"
               :disabled="multiple"
               @click="handleDelete"
             >删除
@@ -76,7 +76,7 @@
             :formatter="statusFormat"
             width="100"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               {{ statusFormat(scope.row) }}
             </template>
           </el-table-column>
@@ -85,7 +85,7 @@
             align="center"
             prop="ipaddr"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-popover trigger="hover" placement="top">
                 <p>IP: {{ scope.row.ipaddr }}</p>
                 <p>归属地: {{ scope.row.loginLocation }}</p>
@@ -105,17 +105,17 @@
             prop="loginTime"
             width="180"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <span>{{ parseTime(scope.row.loginTime) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-button
                 v-permisaction="['admin:sysLoginLog:remove']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-delete"
+                :icon="Delete"
                 @click="handleDelete(scope.row)"
               >删除
               </el-button>
@@ -126,8 +126,8 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageIndex"
-          :limit.sync="queryParams.pageSize"
+          v-model:page="queryParams.pageIndex"
+          v-model:limit="queryParams.pageSize"
           @pagination="getList"
         />
       </el-card>
@@ -135,7 +135,8 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Search, Refresh, Delete } from '@element-plus/icons-vue'
+
 import { delSysLoginlog, getSysLoginlog, listSysLoginlog } from '@/api/admin/sys-login-log'
 
 export default {

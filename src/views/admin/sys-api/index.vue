@@ -10,7 +10,7 @@
               placeholder="请输入标题"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             />
           </el-form-item>
           <el-form-item label="地址" prop="path">
@@ -19,7 +19,7 @@
               placeholder="请输入地址"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             />
           </el-form-item>
           <el-form-item label="Method" prop="action">
@@ -28,7 +28,7 @@
               placeholder="请选择Method"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             >
               <el-option value="GET">GET</el-option>
               <el-option value="POST">POST</el-option>
@@ -42,7 +42,7 @@
               placeholder="请选择类型"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             >
               <el-option value="SYS">SYS</el-option>
               <el-option value="BUS">BUS</el-option>
@@ -50,8 +50,8 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+            <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
 
@@ -72,7 +72,7 @@
             width="260px"
             :show-overflow-tooltip="true"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <span v-if="scope.row.type=='SYS' && scope.row.title!=''"><el-tag type="success">{{ '['+scope.row.type +'] '+ scope.row.title }}</el-tag></span>
               <span v-if="scope.row.type!='SYS' && scope.row.title!=''"><el-tag type="">{{ '['+scope.row.type +'] '+scope.row.title }}</el-tag></span>
               <span v-if="scope.row.title==''"><el-tag type="danger">暂无</el-tag></span>
@@ -88,10 +88,10 @@
             sortable="custom"
             :show-overflow-tooltip="true"
           >
-            <!-- <template slot-scope="scope">
+            <!-- <template #default="scope">
               <span>{{ "["+scope.row.action +"] "+ scope.row.path }}</span>
             </template> -->
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-popover trigger="hover" placement="top">
                 <p><span v-if="scope.row.type=='SYS' && scope.row.title!=''"><el-tag type="success">{{ '['+scope.row.type +'] '+ scope.row.title }}</el-tag></span>
                   <span v-if="scope.row.type!='SYS' && scope.row.title!=''"><el-tag type="">{{ '['+scope.row.type +'] '+scope.row.title }}</el-tag></span>
@@ -122,7 +122,7 @@
             width="155px"
             sortable="custom"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
@@ -132,12 +132,12 @@
             width="80px"
             class-name="small-padding fixed-width"
           >
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-button
                 v-permisaction="['admin:sysApi:edit']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-edit"
+                :icon="Edit"
                 @click="handleUpdate(scope.row)"
               >修改
               </el-button>
@@ -148,8 +148,8 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageIndex"
-          :limit.sync="queryParams.pageSize"
+          v-model:page="queryParams.pageIndex"
+          v-model:limit="queryParams.pageSize"
           @pagination="getList"
         />
 
@@ -158,7 +158,7 @@
           ref="drawer"
           :title="title"
           :before-close="cancel"
-          :visible.sync="open"
+          v-model:visible="open"
           direction="rtl"
           custom-class="demo-drawer"
         >
@@ -183,7 +183,7 @@
                   placeholder="请选择类型"
                   clearable
                   size="small"
-                  @keyup.enter.native="handleQuery"
+                  @keyup.enter="handleQuery"
                 >
                   <el-option value="SYS">SYS</el-option>
                   <el-option value="BUS">BUS</el-option>
@@ -195,7 +195,7 @@
                   placeholder="请选择方式"
                   clearable
                   size="small"
-                  @keyup.enter.native="handleQuery"
+                  @keyup.enter="handleQuery"
                 >
                   <el-option value="GET">GET</el-option>
                   <el-option value="POST">POST</el-option>
@@ -226,7 +226,8 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Search, Refresh, Edit } from '@element-plus/icons-vue'
+
 import { addSysApi, delSysApi, getSysApi, listSysApi, updateSysApi } from '@/api/admin/sys-api'
 
 export default {

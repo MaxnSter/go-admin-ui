@@ -19,7 +19,7 @@
               placeholder="请输入字典标签"
               clearable
               size="small"
-              @keyup.enter.native="handleQuery"
+              @keyup.enter="handleQuery"
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
@@ -33,8 +33,8 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            <el-button type="primary" :icon="Search" size="small" @click="handleQuery">搜索</el-button>
+            <el-button :icon="Refresh" size="small" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
 
@@ -43,8 +43,8 @@
             <el-button
               v-permisaction="['admin:sysDictData:add']"
               type="primary"
-              icon="el-icon-plus"
-              size="mini"
+              :icon="Plus"
+              size="small"
               @click="handleAdd"
             >新增</el-button>
           </el-col>
@@ -52,8 +52,8 @@
             <el-button
               v-permisaction="['admin:sysDictData:edit']"
               type="success"
-              icon="el-icon-edit"
-              size="mini"
+              :icon="Edit"
+              size="small"
               :disabled="single"
               @click="handleUpdate"
             >修改</el-button>
@@ -62,8 +62,8 @@
             <el-button
               v-permisaction="['admin:sysDictData:remove']"
               type="danger"
-              icon="el-icon-delete"
-              size="mini"
+              :icon="Delete"
+              size="small"
               :disabled="multiple"
               @click="handleDelete"
             >删除</el-button>
@@ -79,24 +79,24 @@
           <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
           <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
           <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
-            <template slot-scope="scope">
+            <template #default="scope">
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template slot-scope="scope">
+            <template #default="scope">
               <el-button
                 v-permisaction="['admin:sysDictData:edit']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-edit"
+                :icon="Edit"
                 @click="handleUpdate(scope.row)"
               >修改</el-button>
               <el-button
                 v-permisaction="['admin:sysDictData:remove']"
-                size="mini"
+                size="small"
                 type="text"
-                icon="el-icon-delete"
+                :icon="Delete"
                 @click="handleDelete(scope.row)"
               >删除</el-button>
             </template>
@@ -106,13 +106,13 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageIndex"
-          :limit.sync="queryParams.pageSize"
+          v-model:page="queryParams.pageIndex"
+          v-model:limit="queryParams.pageSize"
           @pagination="getList"
         />
 
         <!-- 添加或修改参数配置对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="500px" :close-on-click-modal="false">
+        <el-dialog :title="title" v-model:visible="open" width="500px" :close-on-click-modal="false">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             <el-form-item label="字典类型">
               <el-input v-model="form.dictType" :disabled="true" />
@@ -149,7 +149,8 @@
   </BasicLayout>
 </template>
 
-<script>
+<script>import { Search, Refresh, Plus, Edit, Delete } from '@element-plus/icons-vue'
+
 import { listData, getData, delData, addData, updateData, exportData } from '@/api/admin/dict/data'
 import { listType, getType } from '@/api/admin/dict/type'
 

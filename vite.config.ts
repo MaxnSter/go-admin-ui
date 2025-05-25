@@ -7,16 +7,22 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
   plugins: [
-    vue(),
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-      imports: ['vue', 'vue-router', 'pinia'],
-      dts: true
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-      dts: true
-    })
+    vue()
+    // 暂时禁用自动导入，改用手动导入
+    // AutoImport({
+    //   resolvers: [ElementPlusResolver()],
+    //   imports: ['vue', 'vue-router', 'pinia'],
+    //   dts: true,
+    //   eslintrc: {
+    //     enabled: true
+    //   }
+    // }),
+    // Components({
+    //   resolvers: [ElementPlusResolver({
+    //     importStyle: false // 禁用自动样式导入，使用手动导入
+    //   })],
+    //   dts: true
+    // })
   ],
   resolve: {
     alias: {
@@ -48,7 +54,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/styles/variables.scss";`
+        charset: false
       }
     }
   }
