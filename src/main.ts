@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { createPinia } from 'pinia'
+import pinia from './stores'
 
 // 样式导入
 import 'normalize.css/normalize.css'
@@ -17,6 +17,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import directives from '@/directive'
 
 // 图标
+// @ts-ignore - icons 模块没有类型声明
 import icons from './icons'
 
 // 权限控制
@@ -33,7 +34,7 @@ import BasicLayout from '@/layout/BasicLayout.vue'
 const app = createApp(App)
 
 // 使用插件
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 app.use(ElementPlus)
 app.use(directives)

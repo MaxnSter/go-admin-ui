@@ -1,4 +1,4 @@
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/modules/user'
 import type { Directive, DirectiveBinding } from 'vue'
 
 const permisaction: Directive = {

@@ -1,6 +1,6 @@
 import router from './router'
-import { useUserStore } from '@/stores/user'
-import { usePermissionStore } from '@/stores/permission'
+import { useUserStore } from '@/stores/modules/user'
+import { usePermissionStore } from '@/stores/modules/permission'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
@@ -38,7 +38,7 @@ router.beforeEach(async (to, from) => {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { roles } = await userStore.getInfo()
+          const { roles } = await userStore.getUserInfo()
 
           // generate accessible routes map based on roles
           const accessRoutes = await permissionStore.generateRoutes(roles)
