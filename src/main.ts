@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { createPinia } from 'pinia'
+import { setupStore } from './stores'
 import ElementPlus, { ElMessage } from 'element-plus'
 import * as Icons from '@element-plus/icons-vue'
 import '@/styles/element-variables.scss'
@@ -30,7 +30,7 @@ import BasicLayout from '@/layout/BasicLayout.vue'
 const app = createApp(App)
 
 // 使用插件
-app.use(createPinia())
+setupStore(app)
 app.use(router)
 app.use(ElementPlus)
 
@@ -63,4 +63,4 @@ app.config.globalProperties.msgInfo = (msg: string) => {
 }
 
 // 挂载应用
-app.mount('#app') 
+app.mount('#app')
